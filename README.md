@@ -3,7 +3,7 @@
 ## Spis treści
 * [O aplikacji](#o-aplikacji)
 * [Technologie](#technologie)
-* [Jak uruchomić?](#jak-uruchomić?)
+* [Jak uruchomić](#jak-uruchomić)
 
 ## O aplikacji
 
@@ -22,4 +22,4 @@
 🌐 NGINX – reverse proxy kierujący ruch do odpowiednich serwisów,<br>
 🐬 MySQL – przechowywanie tras i punktów w bazie danych.<br>
 
-## Jak uruchomić?
+## Jak uruchomić ?
