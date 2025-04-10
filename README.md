@@ -15,11 +15,11 @@
 
 ## Technologie
 
-🧠 Spring Boot (Java) – logika backendu, API REST, komunikacja z bazą danych MySQL,
-🌐 Python (Flask + Folium) – generowanie i renderowanie map z trasą,
-🗺️ OSRM API – pobieranie rzeczywistych czasów i dystansów między punktami,
-📦 Docker – konteneryzacja i uruchamianie aplikacji,
-🌐 NGINX – reverse proxy kierujący ruch do odpowiednich serwisów,
-🐬 MySQL – przechowywanie tras i punktów w bazie danych.
+🧠 Spring Boot (Java) – logika backendu, API REST, komunikacja z bazą danych MySQL,<br>
+🌐 Python (Flask + Folium) – generowanie i renderowanie map z trasą,<br>
+🗺️ OSRM API – pobieranie rzeczywistych czasów i dystansów między punktami,<br>
+📦 Docker – konteneryzacja i uruchamianie aplikacji,<br>
+🌐 NGINX – reverse proxy kierujący ruch do odpowiednich serwisów,<br>
+🐬 MySQL – przechowywanie tras i punktów w bazie danych.<br>
 
 ## Jak uruchomić?
