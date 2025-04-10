@@ -22,4 +22,4 @@
 🌐 NGINX – reverse proxy kierujący ruch do odpowiednich serwisów,<br>
 🐬 MySQL – przechowywanie tras i punktów w bazie danych.<br>
 
-## Jak uruchomić ?
+## Jak uruchomić
