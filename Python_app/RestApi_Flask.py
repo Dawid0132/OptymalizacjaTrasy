@@ -1,4 +1,4 @@
-from flask import Blueprint, Flask, jsonify
+from flask import Blueprint, Flask, jsonify, render_template
 from dotenv import load_dotenv
 import logging
 import requests
@@ -43,6 +43,16 @@ def get_route_osrm(route):
 @bp.route('/')
 def index():
     return jsonify({'message': 'Hello World!'}, 200)
+
+
+@bp.route("/homePage", methods=['GET'])
+def home_page():
+    return render_template('index.html')
+
+
+@bp.route("/displayRoute", methods=['GET'])
+def display_route():
+    return render_template('display_route.html')
 
 
 app = Flask(__name__)
