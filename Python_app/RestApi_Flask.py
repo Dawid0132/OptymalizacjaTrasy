@@ -1,3 +1,4 @@
+import uuid
 from flask import Blueprint, Flask, jsonify, render_template, redirect, request, url_for
 import folium
 from folium.plugins import MousePosition
@@ -14,6 +15,7 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 places_for_visit = []
+legs = []
 
 
 def get_route_osrm(route):
@@ -103,7 +105,6 @@ def show_map():
             print(f"Błąd podczas zapisywania mapy: {e}")
             return jsonify({"error": "Failed to save the map"}), 500
 
-
     return redirect(url_for('RestApi_Flask.home_page'))
 
 
@@ -112,9 +113,43 @@ def home_page():
     return render_template('index.html', map_file="map_help.html")
 
 
+@bp.route('/findRoad', methods=['POST'])
+def find_road():
+    data = request.get_json()
+    places = data.get("places", {})
+
+    if len(places) < 2:
+        return jsonify({"error": "At least two places are required"})
+
+    geometry, duration, distance, legs = get_route_osrm(places_for_visit)
+
+    m = folium.Map(location=(places_for_visit[0]['latitude'], places_for_visit[0]['longitude']), zoom_start=12)
+
+    folium.GeoJson(
+        geometry,
+        style_function=lambda feature, color="#6E64FB": {
+            'fillColor': color,
+            'color': color,
+            'weight': 3,
+            'opacity': 1
+        }
+    ).add_to(m)
+
+    map_html_path = os.path.join('static', 'generatedMap.html')
+
+    try:
+        m.save(map_html_path)
+        print(f"Mapa zapisana: {map_html_path}")
+    except Exception as e:
+        print(f"Błąd podczas zapisywania mapy: {e}")
+        return jsonify({"error": "Failed to save the map"}), 500
+
+    return redirect(url_for('RestApi_Flask.display_route'))
+
+
 @bp.route("/displayRoute", methods=['GET'])
 def display_route():
-    return render_template('display_route.html')
+    return render_template('display_route.html', map_file="generatedMap.html")
 
 
 app = Flask(__name__)
