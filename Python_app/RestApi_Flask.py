@@ -113,6 +113,11 @@ def home_page():
     return render_template('index.html', map_file="map_help.html")
 
 
+@bp.route('/legs', methods=['GET'])
+def get_legs():
+    return jsonify({legs}, 200)
+
+
 @bp.route('/findRoad', methods=['POST'])
 def find_road():
     data = request.get_json()
@@ -140,7 +145,6 @@ def find_road():
     '''
 
     m.get_root().html.add_child(folium.Element(legend_html))
-
 
     folium.GeoJson(
         geometry,
