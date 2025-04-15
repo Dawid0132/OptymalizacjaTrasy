@@ -218,6 +218,30 @@ def verify():
     return jsonify({"message": "verify completed"}, 200)
 
 
+@bp.route('/getPlaces', methods=['GET'])
+def getPlaces():
+    return jsonify({places_for_visit}, 200)
+
+
+@bp.route('/deletePlaces', methods=['DELETE'])
+def delete_places():
+    data = request.get_json()
+    places_for_delete = data.get("places", [])
+
+    if not places_for_delete:
+        return jsonify({"error": "Missing parameters"}), 400
+
+    global places_for_visit
+
+    places_for_delete = {int(idx) - 1 for idx in places_for_delete}
+
+    places_for_visit = [place for idx, place in enumerate(places_for_visit) if idx not in places_for_delete]
+
+    update_map(places_for_visit)
+
+    return jsonify({places_for_visit}, 200)
+
+
 @bp.route('/findRoad', methods=['POST'])
 def find_road():
     data = request.get_json()
