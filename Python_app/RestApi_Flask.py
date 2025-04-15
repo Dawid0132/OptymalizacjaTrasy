@@ -223,6 +223,35 @@ def getPlaces():
     return jsonify({places_for_visit}, 200)
 
 
+@bp.route('/addPlaces/<latitude>/<longitude>', methods=['GET'])
+def addPlaces(latitude, longitude):
+    if not all([latitude, longitude]):
+        return jsonify({"error": "Missing parameters"}, 400)
+
+    global places_for_visit
+
+    tolerance = 0.0001
+
+    lat_difference = abs(float(latitude) - float(location['latitude']))
+    lng_difference = abs(float(longitude) - float(location['longitude']))
+
+    if lat_difference < tolerance and lng_difference < tolerance:
+        for place in places_for_visit:
+            if latitude in place['latitude'] and longitude in place['longitude']:
+                return jsonify({places_for_visit}, 200)
+
+        places_for_visit.append({
+            "latitude": latitude,
+            "longitude": longitude
+        })
+
+        update_map(places_for_visit)
+
+        return jsonify({places_for_visit}, 200)
+    else:
+        return jsonify({places_for_visit}, 400)
+
+
 @bp.route('/deletePlaces', methods=['DELETE'])
 def delete_places():
     data = request.get_json()
@@ -257,16 +286,16 @@ def find_road():
     m = folium.Map(location=(places_for_visit[0]['latitude'], places_for_visit[0]['longitude']), zoom_start=12)
 
     legend_html = f'''
-    <div style="position: fixed; 
-                 bottom: 10px; left: 10px; width: 160px; height: auto; 
-                 background-color: white; border:2px solid grey; z-index:1;
-                 font-size: 12px; padding: 10px;">
-     <b>Route Legend</b><br>
-     -------------------
-     <br><b>Total Distance:</b> {int(distance // 1000)}km {int(distance % 1000)}m<br>
-     <b>Total Duration:</b> {int(duration // 3600)}h {int((duration % 3600) // 60)}min<br>
-     </div>
-    '''
+<div style="position: fixed; 
+             bottom: 10px; left: 10px; width: 160px; height: auto; 
+             background-color: white; border:2px solid grey; z-index:1;
+             font-size: 12px; padding: 10px;">
+ <b>Route Legend</b><br>
+ -------------------
+ <br><b>Total Distance:</b> {int(distance // 1000)}km {int(distance % 1000)}m<br>
+ <b>Total Duration:</b> {int(duration // 3600)}h {int((duration % 3600) // 60)}min<br>
+ </div>
+'''
 
     m.get_root().html.add_child(folium.Element(legend_html))
 
