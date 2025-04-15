@@ -114,7 +114,7 @@ def update_map(places):
 
 @bp.route('/')
 def index():
-    return jsonify({'message': 'Hello World!'}, 200)
+    return render_template('loading_page_location.html')
 
 
 @bp.route('/map', methods=['GET'])
