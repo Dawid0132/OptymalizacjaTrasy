@@ -121,9 +121,26 @@ def find_road():
     if len(places) < 2:
         return jsonify({"error": "At least two places are required"})
 
+    global legs
+
     geometry, duration, distance, legs = get_route_osrm(places_for_visit)
 
     m = folium.Map(location=(places_for_visit[0]['latitude'], places_for_visit[0]['longitude']), zoom_start=12)
+
+    legend_html = f'''
+    <div style="position: fixed; 
+                 bottom: 10px; left: 10px; width: 160px; height: auto; 
+                 background-color: white; border:2px solid grey; z-index:1;
+                 font-size: 12px; padding: 10px;">
+     <b>Route Legend</b><br>
+     -------------------
+     <br><b>Total Distance:</b> {int(distance // 1000)}km {int(distance % 1000)}m<br>
+     <b>Total Duration:</b> {int(duration // 3600)}h {int((duration % 3600) // 60)}min<br>
+     </div>
+    '''
+
+    m.get_root().html.add_child(folium.Element(legend_html))
+
 
     folium.GeoJson(
         geometry,
