@@ -1,12 +1,11 @@
-import uuid
 from flask import Blueprint, Flask, jsonify, render_template, redirect, request, url_for
 import folium
 from folium.plugins import MousePosition
 import os
 from dotenv import load_dotenv
-from bs4 import BeautifulSoup
 import logging
 import requests
+from jinja2 import Template
 
 bp = Blueprint('RestApi_Flask', __name__, template_folder='templates')
 
@@ -46,13 +45,13 @@ def get_route_osrm(route):
         return None
 
 
-def update_map(places_for_visit):
-    if places_for_visit:
-        last_element = len(places_for_visit) - 1
-        m = folium.Map(location=[float(places_for_visit[last_element]['latitude']),
-                                 float(places_for_visit[last_element]['longitude'])],
+def update_map(places):
+    if places:
+        last_element = len(places) - 1
+        m = folium.Map(location=[float(places[last_element]['latitude']),
+                                 float(places[last_element]['longitude'])],
                        zoom_start=12)
-        for idx, place in enumerate(places_for_visit, start=1):
+        for idx, place in enumerate(places, start=1):
             folium.Marker([float(place['latitude']), float(place['longitude'])],
                           popup=f"{place['latitude']},{place['longitude']}",
                           tooltip=f"{idx}").add_to(m)
@@ -62,6 +61,46 @@ def update_map(places_for_visit):
         mouse_position = MousePosition(position='bottomright', separator=' | ', prefix="Lat, Lng: ", num_digits=6)
 
         m.add_child(mouse_position)
+
+        m_name = m.get_name()
+
+        template_string = '''
+            <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const name = {{ m_name | tojson }}
+                
+                const map = window[name]
+                
+                map.on('click',function(e){
+                    const lat = e.latlng.lat.toFixed(4)
+                    const lng = e.latlng.lng.toFixed(4)
+                    
+                    const data = {
+                        latitude: lat,
+                        longitude: lng
+                    }
+                    
+                    fetch('/api_blueprint/verify',{
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(data => {})
+                    .catch((e) => {
+                        console.error(e)
+                    })      
+                })
+            })
+            </script>
+        '''
+
+        template = Template(template_string)
+        click_js = template.render(m_name=m_name)
+
+        m.get_root().html.add_child(folium.Element(click_js))
 
         map_html_path = os.path.join('static', 'map_help.html')
 
@@ -96,6 +135,46 @@ def show_map():
         mouse_position = MousePosition(position='bottomright', separator=' | ', prefix="Lat, Lng: ", num_digits=6)
         m.add_child(mouse_position)
 
+        m_name = m.get_name()
+
+        template_string = '''
+                    <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const name = {{ m_name | tojson }}
+
+                        const map = window[name]
+
+                        map.on('click',function(e){
+                            const lat = e.latlng.lat.toFixed(4)
+                            const lng = e.latlng.lng.toFixed(4)
+
+                            const data = {
+                                latitude: lat,
+                                longitude: lng
+                            }
+
+                            fetch('/api_blueprint/verify',{
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(data)
+                            })
+                            .then(response => response.json())
+                            .then(data => {})
+                            .catch((e) => {
+                                console.error(e)
+                            })      
+                        })
+                    })
+                    </script>
+                '''
+
+        template = Template(template_string)
+        click_js = template.render(m_name=m_name)
+
+        m.get_root().html.add_child(folium.Element(click_js))
+
         map_html_path = os.path.join('static', f'map_help.html')
 
         try:
@@ -116,6 +195,27 @@ def home_page():
 @bp.route('/legs', methods=['GET'])
 def get_legs():
     return jsonify({legs}, 200)
+
+
+@bp.route('/verify', methods=['POST'])
+def verify():
+    data = request.get_json()
+    latitude = data.get('latitude', None)
+    longitude = data.get('longitude', None)
+
+    if not latitude or not longitude:
+        return jsonify({"error": "Missing parameters"}), 400
+
+    global location
+
+    new_location = {
+        "latitude": latitude,
+        "longitude": longitude
+    }
+
+    location = new_location
+
+    return jsonify({"message": "verify completed"}, 200)
 
 
 @bp.route('/findRoad', methods=['POST'])
