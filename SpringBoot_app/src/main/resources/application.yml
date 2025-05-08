@@ -1,0 +1,53 @@
+spring:
+    config:
+        import: optional:file:.env[.properties]
+    application:
+        name: aTSPSecurity
+    main:
+        web-application-type: reactive
+    r2dbc:
+        url: r2dbc:mysql://localhost:3306/User
+        username: root
+        password: password
+        pool:
+            enabled: true
+            max-size: 20
+            initial-size: 10
+            max-idle-time: 30m
+    data:
+        r2dbc:
+            repositories:
+                enabled: true
+    cloud:
+        gateway:
+            routes:
+                - id: userAuthRest
+                  uri: http://localhost:8090
+                  predicates:
+                      - Path=/rest/user/v2/**
+                - id: userAuthRestService
+                  uri: http://localhost:8091
+                  predicates:
+                      - Path=/rest/user/v1/**
+                - id: mapAuthRest
+                  uri: http://localhost:8080
+                  predicates:
+                      - Path=/rest/map/v2/**
+                - id: mapAuthRestService
+                  uri: http://localhost:8081
+                  predicates:
+                      - Path=/rest/map/v1/**
+            default-filters:
+                - AddResponseHeader=X-Response-Default, Gateway
+        config:
+            server:
+                git:
+                    uri: git@github.com:Dawid0132/OptymalizacjaTrasy_config.git
+                    clone-on-start: true
+
+
+jwt:
+    secret: 659727598214a0d80e24ecfb811ba6a83d1b00dd29f967bed511597d48eb8550a754d8be166d412db3d96e35fedca491ab33f1eb0f2bb474316435ce4e253e402bccc05770cd7d5480d776346501d56141f300781a40cc8088670feb1a9bce8b421bed84f4d40cd7b32193e0f0e1c5ced7ad58a239e245e4f828f1a76f1fc0dd480b88268f0dd858c3fa97b70be46696aeeba41bdb2782b5ff6f3bce79f81f50227c19a8667ba4b7789f9ad472e29d26e84c73c965d4276a73267150dfffd935ffab90b51b5cbc888c3b8f79e722113168c4968ef4171a238bed338559a05d86e2878d95d25568706d729785d17ad3dd6566d9062be135f575d7fcebeb7f65bb
+
+server:
+    port: 8888
