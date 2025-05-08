@@ -64,7 +64,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity httpSecurity) {
-        httpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable)
+        httpSecurity.cors(corsSpec -> corsSpec.configurationSource(corsConfigurationSource()))
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .exceptionHandling(exceptionHandlingSpec -> exceptionHandlingSpec
                         .accessDeniedHandler(customAccessDeniedHandler)
                         .authenticationEntryPoint(customAuthenticationEntryPoint))
@@ -77,6 +78,22 @@ public class SecurityConfig {
 
         return httpSecurity.build();
     }
+
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "XSRF-TOKEN"));
+        configuration.setExposedHeaders(List.of("XSRF-TOKEN"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
 
 
     @Bean
