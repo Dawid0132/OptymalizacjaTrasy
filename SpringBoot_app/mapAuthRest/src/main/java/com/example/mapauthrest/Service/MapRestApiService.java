@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -88,6 +89,11 @@ public class MapRestApiService {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    public ResponseEntity<List<Coordinates>> getAllCoordinates(Long user_id) {
+        List<Coordinates> coordinates = new ArrayList<Coordinates>(coordinatesRepository.findAllByUserId(user_id));
+        return ResponseEntity.ok(coordinates);
     }
 
 }
