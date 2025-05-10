@@ -1,0 +1,13 @@
+server:
+  port: 8090
+spring:
+  application:
+    name: userAuthRest
+  datasource:
+    password: password
+    url: jdbc:mysql://localhost:3306/User
+    username: root
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
