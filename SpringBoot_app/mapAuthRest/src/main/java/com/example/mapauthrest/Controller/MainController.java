@@ -33,4 +33,9 @@ public class MainController {
         return mapRestApiService.getAllCoordinates(user_id);
     }
 
+    @DeleteMapping(path = "/coordinates/{ids}")
+    public ResponseEntity<Coordinates> deleteCoordinates(@PathVariable("ids") Long[] ids) {
+        return mapRestApiService.deleteCoordinates(ids);
+    }
+
 }
