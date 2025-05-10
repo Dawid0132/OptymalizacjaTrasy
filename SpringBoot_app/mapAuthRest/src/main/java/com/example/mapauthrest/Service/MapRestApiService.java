@@ -1,5 +1,6 @@
 package com.example.mapauthrest.Service;
 
+import com.example.mapauthrest.DB.Entities.Coordinates;
 import com.example.mapauthrest.DB.Entities.VerifyClickedCoordinates;
 import com.example.mapauthrest.DB.Repositories.CoordinatesRepository;
 import com.example.mapauthrest.DB.Repositories.VerifyClickedCoordinatesRepository;
@@ -9,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -49,6 +51,43 @@ public class MapRestApiService {
             }
         }
         return null;
+    }
+
+    public ResponseEntity<VerifyClickedCoordinates> getClickedCoordinates(Long user_id, Coordinates_Req coordinates_req) {
+        Optional<VerifyClickedCoordinates> clickedCoordinates = verifyClickedCoordinatesRepository.findByUserId(user_id);
+        List<Coordinates> coordinatesList = coordinatesRepository.findAllByUserId(user_id);
+
+
+        float epsilon = 0.00000001F;
+        boolean key = true;
+
+        if (!coordinatesList.isEmpty()) {
+            for (Coordinates coordinates : coordinatesList) {
+                if (Math.abs(coordinates.getLatitude() - coordinates_req.getLatitude()) < epsilon && Math.abs(coordinates.getLongitude() - coordinates_req.getLongitude()) < epsilon) {
+                    key = false;
+                }
+            }
+        }
+
+        if (clickedCoordinates.isPresent() && key) {
+            VerifyClickedCoordinates verifyClickedCoordinates = clickedCoordinates.get();
+            if (Math.abs(verifyClickedCoordinates.getLatitude() - coordinates_req.getLatitude()) < epsilon && Math.abs(verifyClickedCoordinates.getLongitude() - coordinates_req.getLongitude()) < epsilon) {
+                Coordinates coordinates = new Coordinates();
+                try {
+                    coordinates.setUserId(user_id);
+                    coordinates.setLongitude(coordinates_req.getLongitude());
+                    coordinates.setLatitude(coordinates_req.getLatitude());
+                    coordinatesRepository.save(coordinates);
+                    return ResponseEntity.ok(verifyClickedCoordinates);
+                } catch (Exception e) {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.CONFLICT);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
 }
