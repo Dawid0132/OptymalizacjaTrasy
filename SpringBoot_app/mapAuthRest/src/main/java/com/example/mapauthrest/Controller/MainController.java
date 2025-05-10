@@ -20,5 +20,10 @@ public class MainController {
         return mapRestApiService.updateClickedCoordinates(user_id, coordinates_req);
     }
 
+    @PostMapping(path = "/coordinatesVerify/{user_id}")
+    public ResponseEntity<VerifyClickedCoordinates> getCoordinatesClicked(@PathVariable("user_id") Long user_id, @RequestBody Coordinates_Req coordinates_req) {
+        return mapRestApiService.getClickedCoordinates(user_id, coordinates_req);
+    }
+
 
 }
