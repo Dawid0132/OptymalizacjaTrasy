@@ -18,6 +18,11 @@ public class MainController {
         this.mapRestApiService = mapRestApiService;
     }
 
+    @GetMapping(path = "/getRoute/{user_id}")
+    public ResponseEntity<Object> getRoute(@PathVariable("user_id") Long user_id) {
+        return mapRestApiService.getRoute(user_id);
+    }
+
     @PutMapping(path = "/coordinatesVerify/{user_id}")
     public ResponseEntity<VerifyClickedCoordinates> updateCoordinatesClicked(@PathVariable("user_id") Long user_id, @RequestBody Coordinates_Req coordinates_req) {
         return mapRestApiService.updateClickedCoordinates(user_id, coordinates_req);
