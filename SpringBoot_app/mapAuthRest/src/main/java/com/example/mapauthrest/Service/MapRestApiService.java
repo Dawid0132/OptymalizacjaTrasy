@@ -5,6 +5,7 @@ import com.example.mapauthrest.DB.Entities.VerifyClickedCoordinates;
 import com.example.mapauthrest.DB.Repositories.CoordinatesRepository;
 import com.example.mapauthrest.DB.Repositories.VerifyClickedCoordinatesRepository;
 import com.example.mapauthrest.Pojo.Request.Coordinates_Req;
+import com.example.mapauthrest.Pojo.Route.Route;
 import jakarta.transaction.Transactional;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -135,6 +136,47 @@ public class MapRestApiService {
         }
 
     }
+
+    public ResponseEntity<Object> getLegs(Long user_id) {
+
+        List<Coordinates> coordinates = new ArrayList<Coordinates>(coordinatesRepository.findAllByUserId(user_id));
+
+        if (coordinates.size() < 2) {
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        try {
+            String url = "http://router.project-osrm.org/trip/v1/driving/{coordinates}?geometries={geometries}&overview={overview}&steps={steps}&annotations={annotations}";
+            StringBuilder coordinatesStr = new StringBuilder();
+            for (Coordinates coordinate : coordinates) {
+                coordinatesStr.append(coordinate.getLongitude()).append(",").append(coordinate.getLatitude()).append(";");
+            }
+
+            if (coordinatesStr.length() > 0) {
+                coordinatesStr.setLength(coordinatesStr.length() - 1);
+            }
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            Map<String, String> map = new HashMap<>();
+            map.put("coordinates", coordinatesStr.toString());
+            map.put("geometries", "geojson");
+            map.put("overview", "full");
+            map.put("steps", "true");
+            map.put("annotations", "true");
+
+            ResponseEntity<Route> response = restTemplate.exchange(url, HttpMethod.GET, entity, Route.class, map);
+
+            return ResponseEntity.ok(response.getBody());
+        } catch (HttpClientErrorException.BadRequest exception) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @Transactional
     public ResponseEntity<Coordinates> deleteCoordinates(Long[] ids) {
         try {
