@@ -5,12 +5,14 @@ import com.example.mapauthrest.DB.Entities.VerifyClickedCoordinates;
 import com.example.mapauthrest.DB.Repositories.CoordinatesRepository;
 import com.example.mapauthrest.DB.Repositories.VerifyClickedCoordinatesRepository;
 import com.example.mapauthrest.Pojo.Request.Coordinates_Req;
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,6 +96,17 @@ public class MapRestApiService {
     public ResponseEntity<List<Coordinates>> getAllCoordinates(Long user_id) {
         List<Coordinates> coordinates = new ArrayList<Coordinates>(coordinatesRepository.findAllByUserId(user_id));
         return ResponseEntity.ok(coordinates);
+    }
+
+    @Transactional
+    public ResponseEntity<Coordinates> deleteCoordinates(Long[] ids) {
+        try {
+            coordinatesRepository.deleteCoordinatesByIds(Arrays.asList(ids));
+
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
 }
