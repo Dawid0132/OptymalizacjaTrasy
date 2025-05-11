@@ -16,8 +16,8 @@ logging.basicConfig(level=logging.INFO)
 places_for_visit = []
 legs = []
 
-UNPROTECTED_ENDPOINTS = ['RestApi_Flask.home_page', 'User_api.login', 'User_api.register',
-                         'User_api.auth_login']
+UNPROTECTED_ENDPOINTS = ['RestApi_Flask.home_page', 'user_api.login', 'user_api.register',
+                         'user_api.auth_login']
 
 @bp.before_request
 def check_auth():
