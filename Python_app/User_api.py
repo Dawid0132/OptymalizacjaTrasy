@@ -31,6 +31,11 @@ def auth_login():
         return jsonify({"message": "Not authenticated"}), 401
 
 
+@user_api.route('/profile', methods=['GET'])
+def profile():
+    return render_template('/Dashboard/Profile/Profile.html')
+
+
 @user_api.route('/logout', methods=['POST'])
 def logout():
     session.clear()
