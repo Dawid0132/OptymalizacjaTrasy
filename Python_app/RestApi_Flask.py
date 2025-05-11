@@ -9,13 +9,6 @@ from jinja2 import Template
 
 bp = Blueprint('RestApi_Flask', __name__, template_folder='templates', url_prefix='/smartroute')
 
-load_dotenv()
-
-logging.basicConfig(level=logging.INFO)
-
-places_for_visit = []
-legs = []
-
 UNPROTECTED_ENDPOINTS = ['RestApi_Flask.home_page', 'user_api.login', 'user_api.register',
                          'user_api.auth_login']
 
