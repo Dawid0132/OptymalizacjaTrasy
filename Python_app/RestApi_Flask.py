@@ -7,11 +7,12 @@ import logging
 import requests
 from jinja2 import Template
 
-bp = Blueprint('RestApi_Flask', __name__, template_folder='templates')
+bp = Blueprint('RestApi_Flask', __name__, template_folder='templates', url_prefix='/smartroute')
 
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
+
 
 places_for_visit = []
 legs = []
@@ -327,7 +328,7 @@ def display_route():
 
 
 app = Flask(__name__)
-app.register_blueprint(bp, url_prefix='/api_blueprint')
+app.register_blueprint(bp)
 
 if __name__ == '__main__':
     app.run(debug=True)
