@@ -1,4 +1,4 @@
-from flask import Blueprint, Flask, jsonify, render_template, redirect, request, url_for
+from flask import Blueprint, Flask, jsonify, render_template, redirect, request, url_for, session
 import folium
 from folium.plugins import MousePosition
 import os
@@ -13,10 +13,22 @@ load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 
-
 places_for_visit = []
 legs = []
 
+UNPROTECTED_ENDPOINTS = ['RestApi_Flask.home_page', 'User_api.login', 'User_api.register',
+                         'User_api.auth_login']
+
+@bp.before_request
+def check_auth():
+    if request.endpoint in UNPROTECTED_ENDPOINTS:
+        if session.get('authenticated') is True:
+            return redirect(url_for('dashboard_api.index'))
+        return
+
+    if session.get('authenticated') is not True:
+        return redirect(url_for('user_api.login'))
+    return
 
 def get_route_osrm(route):
     url = "http://router.project-osrm.org/trip/v1/driving/"
