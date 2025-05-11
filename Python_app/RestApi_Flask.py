@@ -1,4 +1,4 @@
-from flask import Blueprint, Flask, jsonify, render_template, redirect, request, url_for
+from flask import Blueprint, Flask, jsonify, render_template, redirect, request, url_for, session
 import folium
 from folium.plugins import MousePosition
 import os
@@ -7,7 +7,7 @@ import logging
 import requests
 from jinja2 import Template
 
-bp = Blueprint('RestApi_Flask', __name__, template_folder='templates')
+bp = Blueprint('RestApi_Flask', __name__, template_folder='templates', url_prefix='/smartroute')
 
 load_dotenv()
 
@@ -16,318 +16,37 @@ logging.basicConfig(level=logging.INFO)
 places_for_visit = []
 legs = []
 
-
-def get_route_osrm(route):
-    url = "http://router.project-osrm.org/trip/v1/driving/"
-    coordinates_str = ";".join([f"{place['longitude']},{place['latitude']}" for place in places_for_visit])
-
-    params = {
-        "geometries": "geojson",
-        "overview": "full",
-        "steps": "true",
-        "annotations": "true"
-    }
-
-    try:
-        logging.info(f"Requesting route from OSRM with coords: {route}")
-        response = requests.get(url + coordinates_str, params=params)
-        response.raise_for_status()
-        data = response.json()
-        if data.get('trips'):
-            logging.info("Route successfully retrieved")
-            route = data['trips'][0]
-            return route['geometry'], route['duration'], route['distance'], route['legs']
-        else:
-            logging.warning("No routes found in OSRM response")
-            return None
-    except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching route from OSRM: {e}")
-        return None
+UNPROTECTED_ENDPOINTS = ['RestApi_Flask.home_page', 'User_api.login', 'User_api.register',
+                         'User_api.auth_login']
 
 
-def update_map(places):
-    if places:
-        last_element = len(places) - 1
-        m = folium.Map(location=[float(places[last_element]['latitude']),
-                                 float(places[last_element]['longitude'])],
-                       zoom_start=12)
-        for idx, place in enumerate(places, start=1):
-            folium.Marker([float(place['latitude']), float(place['longitude'])],
-                          popup=f"{place['latitude']},{place['longitude']}",
-                          tooltip=f"{idx}").add_to(m)
+@bp.before_request
+def check_auth():
+    if request.endpoint in UNPROTECTED_ENDPOINTS:
+        if session.get('authenticated') is True:
+            return redirect(url_for('dashboard_api.index'))
+        return
 
-        m.add_child(folium.LatLngPopup())
-
-        mouse_position = MousePosition(position='bottomright', separator=' | ', prefix="Lat, Lng: ", num_digits=6)
-
-        m.add_child(mouse_position)
-
-        m_name = m.get_name()
-
-        template_string = '''
-            <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const name = {{ m_name | tojson }}
-                
-                const map = window[name]
-                
-                map.on('click',function(e){
-                    const lat = e.latlng.lat.toFixed(4)
-                    const lng = e.latlng.lng.toFixed(4)
-                    
-                    const data = {
-                        latitude: lat,
-                        longitude: lng
-                    }
-                    
-                    fetch('/api_blueprint/verify',{
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(data)
-                    })
-                    .then(response => response.json())
-                    .then(data => {})
-                    .catch((e) => {
-                        console.error(e)
-                    })      
-                })
-            })
-            </script>
-        '''
-
-        template = Template(template_string)
-        click_js = template.render(m_name=m_name)
-
-        m.get_root().html.add_child(folium.Element(click_js))
-
-        map_html_path = os.path.join('static', 'map_help.html')
-
-        try:
-            m.save(map_html_path)
-            print(f"Mapa zapisana: {map_html_path}")
-        except Exception as e:
-            print(f"Błąd podczas zapisywania mapy: {e}")
-        return jsonify({"error": "Failed to save the map"}), 500
+    if session.get('authenticated') is not True:
+        return redirect(url_for('user_api.login'))
+    return
 
 
-@bp.route('/')
-def index():
-    return render_template('loading_page_location.html')
-
-
-@bp.route('/map', methods=['GET'])
-def show_map():
-    global places_for_visit
-
-    if places_for_visit:
-        update_map(places_for_visit)
-    else:
-        lat = request.args.get("lat", 52.237049)
-        lon = request.args.get("lon", 21.017532)
-
-        m = folium.Map(location=[lat, lon], zoom_start=12)
-        folium.Marker([lat, lon], popup="Twoja lokalizacja", tooltip="Jesteś tutaj").add_to(m)
-
-        m.add_child(folium.LatLngPopup())
-
-        mouse_position = MousePosition(position='bottomright', separator=' | ', prefix="Lat, Lng: ", num_digits=6)
-        m.add_child(mouse_position)
-
-        m_name = m.get_name()
-
-        template_string = '''
-                    <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        const name = {{ m_name | tojson }}
-
-                        const map = window[name]
-
-                        map.on('click',function(e){
-                            const lat = e.latlng.lat.toFixed(4)
-                            const lng = e.latlng.lng.toFixed(4)
-
-                            const data = {
-                                latitude: lat,
-                                longitude: lng
-                            }
-
-                            fetch('/api_blueprint/verify',{
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(data)
-                            })
-                            .then(response => response.json())
-                            .then(data => {})
-                            .catch((e) => {
-                                console.error(e)
-                            })      
-                        })
-                    })
-                    </script>
-                '''
-
-        template = Template(template_string)
-        click_js = template.render(m_name=m_name)
-
-        m.get_root().html.add_child(folium.Element(click_js))
-
-        map_html_path = os.path.join('static', f'map_help.html')
-
-        try:
-            m.save(map_html_path)
-            print(f"Mapa zapisana: {map_html_path}")
-        except Exception as e:
-            print(f"Błąd podczas zapisywania mapy: {e}")
-            return jsonify({"error": "Failed to save the map"}), 500
-
-    return redirect(url_for('RestApi_Flask.home_page'))
-
-
-@bp.route("/homePage", methods=['GET'])
+@bp.route('/homePage')
 def home_page():
-    return render_template('index.html', map_file="map_help.html")
+    return render_template('HomePage/HomePage.html')
 
 
-@bp.route('/legs', methods=['GET'])
-def get_legs():
-    return jsonify({legs}, 200)
-
-
-@bp.route('/verify', methods=['POST'])
-def verify():
-    data = request.get_json()
-    latitude = data.get('latitude', None)
-    longitude = data.get('longitude', None)
-
-    if not latitude or not longitude:
-        return jsonify({"error": "Missing parameters"}), 400
-
-    global location
-
-    new_location = {
-        "latitude": latitude,
-        "longitude": longitude
-    }
-
-    location = new_location
-
-    return jsonify({"message": "verify completed"}, 200)
-
-
-@bp.route('/getPlaces', methods=['GET'])
-def getPlaces():
-    return jsonify({places_for_visit}, 200)
-
-
-@bp.route('/addPlaces/<latitude>/<longitude>', methods=['GET'])
-def addPlaces(latitude, longitude):
-    if not all([latitude, longitude]):
-        return jsonify({"error": "Missing parameters"}, 400)
-
-    global places_for_visit
-
-    tolerance = 0.0001
-
-    lat_difference = abs(float(latitude) - float(location['latitude']))
-    lng_difference = abs(float(longitude) - float(location['longitude']))
-
-    if lat_difference < tolerance and lng_difference < tolerance:
-        for place in places_for_visit:
-            if latitude in place['latitude'] and longitude in place['longitude']:
-                return jsonify({places_for_visit}, 200)
-
-        places_for_visit.append({
-            "latitude": latitude,
-            "longitude": longitude
-        })
-
-        update_map(places_for_visit)
-
-        return jsonify({places_for_visit}, 200)
-    else:
-        return jsonify({places_for_visit}, 400)
-
-
-@bp.route('/deletePlaces', methods=['DELETE'])
-def delete_places():
-    data = request.get_json()
-    places_for_delete = data.get("places", [])
-
-    if not places_for_delete:
-        return jsonify({"error": "Missing parameters"}), 400
-
-    global places_for_visit
-
-    places_for_delete = {int(idx) - 1 for idx in places_for_delete}
-
-    places_for_visit = [place for idx, place in enumerate(places_for_visit) if idx not in places_for_delete]
-
-    update_map(places_for_visit)
-
-    return jsonify({places_for_visit}, 200)
-
-
-@bp.route('/findRoad', methods=['POST'])
-def find_road():
-    data = request.get_json()
-    places = data.get("places", {})
-
-    if len(places) < 2:
-        return jsonify({"error": "At least two places are required"})
-
-    global legs
-
-    geometry, duration, distance, legs = get_route_osrm(places_for_visit)
-
-    m = folium.Map(location=(places_for_visit[0]['latitude'], places_for_visit[0]['longitude']), zoom_start=12)
-
-    legend_html = f'''
-<div style="position: fixed; 
-             bottom: 10px; left: 10px; width: 160px; height: auto; 
-             background-color: white; border:2px solid grey; z-index:1;
-             font-size: 12px; padding: 10px;">
- <b>Route Legend</b><br>
- -------------------
- <br><b>Total Distance:</b> {int(distance // 1000)}km {int(distance % 1000)}m<br>
- <b>Total Duration:</b> {int(duration // 3600)}h {int((duration % 3600) // 60)}min<br>
- </div>
-'''
-
-    m.get_root().html.add_child(folium.Element(legend_html))
-
-    folium.GeoJson(
-        geometry,
-        style_function=lambda feature, color="#6E64FB": {
-            'fillColor': color,
-            'color': color,
-            'weight': 3,
-            'opacity': 1
-        }
-    ).add_to(m)
-
-    map_html_path = os.path.join('static', 'generatedMap.html')
-
-    try:
-        m.save(map_html_path)
-        print(f"Mapa zapisana: {map_html_path}")
-    except Exception as e:
-        print(f"Błąd podczas zapisywania mapy: {e}")
-        return jsonify({"error": "Failed to save the map"}), 500
-
-    return redirect(url_for('RestApi_Flask.display_route'))
-
-
-@bp.route("/displayRoute", methods=['GET'])
-def display_route():
-    return render_template('display_route.html', map_file="generatedMap.html")
-
+from user_api import user_api
+from map_api import map_api
+from dashboard_api import dashboard_api
 
 app = Flask(__name__)
-app.register_blueprint(bp, url_prefix='/api_blueprint')
+app.secret_key = 'secret_key'
+app.register_blueprint(bp)
+app.register_blueprint(user_api)
+app.register_blueprint(map_api)
+app.register_blueprint(dashboard_api)
 
 if __name__ == '__main__':
     app.run(debug=True)
