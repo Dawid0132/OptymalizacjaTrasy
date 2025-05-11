@@ -1,5 +1,5 @@
 import requests
-from flask import Blueprint, render_template, session, jsonify, request
+from flask import Blueprint, render_template, session, jsonify, request, redirect, url_for
 
 user_api = Blueprint('user_api', __name__, template_folder='templates', url_prefix='/user')
 
@@ -29,3 +29,9 @@ def auth_login():
         return response.content, response.status_code
     except requests.RequestException:
         return jsonify({"message": "Not authenticated"}), 401
+
+
+@user_api.route('/logout', methods=['POST'])
+def logout():
+    session.clear()
+    return redirect(url_for('direction_api.home_page'))
