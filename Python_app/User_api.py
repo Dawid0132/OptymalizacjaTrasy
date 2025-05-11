@@ -36,6 +36,22 @@ def profile():
     return render_template('/Dashboard/Profile/Profile.html')
 
 
+@user_api.route('/password/<int:id>')
+def verifyPassword(id):
+    data = request.json
+    token = request.cookies.get('access_token')
+
+    try:
+        response = requests.get(
+            f'http://localhost:8888/rest/user/v1/getPassword/{id}',
+            json=data,
+            headers={'Content-Type': 'application/json',
+                     'Authorization': f'Bearer {token}'}
+        )
+    except requests.RequestException:
+        return jsonify({"message": "Not authenticated"}), 401
+
+
 @user_api.route('/logout', methods=['POST'])
 def logout():
     session.clear()
