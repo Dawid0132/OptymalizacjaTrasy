@@ -19,6 +19,17 @@ legs = []
 UNPROTECTED_ENDPOINTS = ['RestApi_Flask.home_page', 'User_api.login', 'User_api.register',
                          'User_api.auth_login']
 
+@bp.before_request
+def check_auth():
+    if request.endpoint in UNPROTECTED_ENDPOINTS:
+        if session.get('authenticated') is True:
+            return redirect(url_for('dashboard_api.index'))
+        return
+
+    if session.get('authenticated') is not True:
+        return redirect(url_for('user_api.login'))
+    return
+
 
 @bp.before_request
 def check_auth():
