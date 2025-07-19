@@ -1,15 +1,17 @@
 package com.example.databaseCore.Entities.Maps;
 
-import com.example.databaseCore.Entities.User.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 @Entity
-@NamedQuery(name = "Coordinates.findByUserId", query = "select c from Coordinates c where c.user.id=?1")
-public class Coordinates {
+public class CoordinatesForTrips {
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,26 +29,19 @@ public class Coordinates {
     private Float longitude;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "trip_id", nullable = false)
     @JsonBackReference
-    private User user;
+    private Trips trips;
 
-    public Coordinates(Long id, Float latitude, Float longitude, User user) {
+    public CoordinatesForTrips(Long id, Float latitude, Float longitude, Trips trips) {
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.user = user;
+        this.trips = trips;
     }
 
-    public Coordinates() {
-    }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
+    public CoordinatesForTrips() {
     }
 
     public Long getId() {
@@ -72,3 +67,12 @@ public class Coordinates {
     public void setLongitude(Float longitude) {
         this.longitude = longitude;
     }
+
+    public Trips getTrips() {
+        return trips;
+    }
+
+    public void setTrips(Trips trips) {
+        this.trips = trips;
+    }
+}
