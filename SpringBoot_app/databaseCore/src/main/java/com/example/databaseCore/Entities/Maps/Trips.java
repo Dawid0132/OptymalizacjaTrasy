@@ -67,6 +67,12 @@ public class Trips {
     public Trips() {
     }
 
+    public List<CoordinatesForTrips> addCoordinatesForTrips(CoordinatesForTrips coordinatesForTrips) {
+        coordinatesForTrips.setTrips(this);
+        coordinates.add(coordinatesForTrips);
+        return coordinates;
+    }
+
     public Long getId() {
         return id;
     }
