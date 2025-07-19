@@ -37,4 +37,8 @@ public class UserController {
         return userService.password_change(user_id, passwordChanged);
     }
 
+    @DeleteMapping("/account/delete/{user_id}")
+    public ResponseEntity<Void> account_delete(@PathVariable Long user_id) {
+        return userService.account_delete(user_id);
+    }
 }

@@ -110,4 +110,19 @@ public class UserService {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    public ResponseEntity<Void> account_delete(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        try {
+            if (user.isPresent()) {
+                User _user = user.get();
+                userRepository.delete(_user);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
