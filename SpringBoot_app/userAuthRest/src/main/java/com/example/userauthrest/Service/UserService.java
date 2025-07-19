@@ -1,6 +1,7 @@
 package com.example.userauthrest.Service;
 
 import com.example.databaseCore.Entities.User.User;
+import com.example.databaseCore.Pojos.User.Req.PasswordChanged;
 import com.example.databaseCore.Pojos.User.Req.UserRegister;
 import com.example.databaseCore.Repositories.User.UserRepository;
 import org.springframework.http.HttpStatus;
@@ -56,6 +57,26 @@ public class UserService {
                 }
                 userRepository.save(_user);
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    public ResponseEntity<Void> verify_password(Long userId, PasswordChanged passwordChanged) {
+        Optional<User> user = userRepository.findById(userId);
+        try {
+            if (user.isPresent()) {
+                User _user = user.get();
+                if (passwordChanged.getPassword().equals(passwordChanged.getNew_password()) && passwordEncoder.matches(passwordChanged.getPassword(), _user.getPassword())) {
+                    _user.setPasswordChanged(Boolean.TRUE);
+                    userRepository.save(_user);
+                    return new ResponseEntity<>(HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }

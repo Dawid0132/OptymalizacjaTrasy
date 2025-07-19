@@ -22,10 +22,14 @@ public class UserController {
     public ResponseEntity<String> register(@Valid @RequestBody UserRegister userRegister) {
         return userService.register(userRegister);
     }
-
     @PutMapping("/logout/{user_id}")
     public ResponseEntity<Void> logout(@PathVariable("user_id") Long user_id) {
         return userService.logout(user_id);
+    }
+
+    @PostMapping("/password/verify/{user_id}")
+    public ResponseEntity<Void> password_verify(@PathVariable Long user_id, @RequestBody PasswordChanged passwordChanged) {
+        return userService.verify_password(user_id, passwordChanged);
     }
 
 }
