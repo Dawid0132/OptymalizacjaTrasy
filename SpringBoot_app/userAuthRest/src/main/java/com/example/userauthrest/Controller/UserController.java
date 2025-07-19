@@ -32,4 +32,9 @@ public class UserController {
         return userService.verify_password(user_id, passwordChanged);
     }
 
+    @PutMapping("/password/change/{user_id}")
+    public ResponseEntity<Void> password_change(@PathVariable Long user_id, @RequestBody PasswordChanged passwordChanged) {
+        return userService.password_change(user_id, passwordChanged);
+    }
+
 }

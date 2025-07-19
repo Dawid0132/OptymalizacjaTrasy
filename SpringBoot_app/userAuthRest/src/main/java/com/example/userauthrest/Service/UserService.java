@@ -84,4 +84,30 @@ public class UserService {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+
+    public ResponseEntity<Void> password_change(Long userId, PasswordChanged passwordChanged) {
+        Optional<User> user = userRepository.findById(userId);
+        try {
+            if (user.isPresent()) {
+                User _user = user.get();
+                if (passwordChanged.getPassword().equals(passwordChanged.getNew_password())) {
+                    if (_user.getPasswordChanged()) {
+                        _user.setPassword(passwordEncoder.encode(passwordChanged.getPassword()));
+                        _user.setPasswordChanged(Boolean.FALSE);
+                        userRepository.save(_user);
+                        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                    } else {
+                        return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+                    }
+                } else {
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
