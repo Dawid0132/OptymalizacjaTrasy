@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -42,4 +43,24 @@ public class UserService {
         }
     }
 
+    public ResponseEntity<Void> logout(Long userId) {
+        Optional<User> user = userRepository.findById(userId);
+        try {
+            if (user.isPresent()) {
+                User _user = user.get();
+                if (_user.getLoggedIn()) {
+                    _user.setLastLogin(LocalDateTime.now());
+                    _user.setLoggedIn(Boolean.FALSE);
+                } else {
+                    _user.setLoggedIn(Boolean.TRUE);
+                }
+                userRepository.save(_user);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }
