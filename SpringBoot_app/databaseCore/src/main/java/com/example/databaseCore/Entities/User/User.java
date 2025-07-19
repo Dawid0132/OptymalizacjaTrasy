@@ -1,4 +1,4 @@
-package com.example.userauthrest.DB.Entities;
+package com.example.databaseCore.Entities.User;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;

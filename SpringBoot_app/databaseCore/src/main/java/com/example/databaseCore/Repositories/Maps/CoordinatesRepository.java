@@ -1,6 +1,8 @@
-package com.example.mapauthrest.DB.Repositories;
+package com.example.databaseCore.Repositories.Maps;
 
-import com.example.mapauthrest.DB.Entities.Coordinates;
+
+
+import com.example.databaseCore.Entities.Maps.Coordinates;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.CrudRepository;
 

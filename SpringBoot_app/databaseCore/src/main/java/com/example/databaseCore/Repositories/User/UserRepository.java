@@ -1,6 +1,7 @@
-package com.example.userauthrest.DB.Repositories;
+package com.example.databaseCore.Repositories.User;
 
-import com.example.userauthrest.DB.Entities.User;
+
+import com.example.databaseCore.Entities.User.User;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

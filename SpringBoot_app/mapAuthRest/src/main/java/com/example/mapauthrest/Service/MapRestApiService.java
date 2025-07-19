@@ -1,11 +1,11 @@
 package com.example.mapauthrest.Service;
 
-import com.example.mapauthrest.DB.Entities.Coordinates;
-import com.example.mapauthrest.DB.Entities.VerifyClickedCoordinates;
-import com.example.mapauthrest.DB.Repositories.CoordinatesRepository;
-import com.example.mapauthrest.DB.Repositories.VerifyClickedCoordinatesRepository;
-import com.example.mapauthrest.Pojo.Request.Coordinates_Req;
-import com.example.mapauthrest.Pojo.Route.Route;
+import com.example.databaseCore.Entities.Maps.Coordinates;
+import com.example.databaseCore.Entities.Maps.VerifyClickedCoordinates;
+import com.example.databaseCore.Pojos.Maps.Req.Coordinates_Req;
+import com.example.databaseCore.Pojos.Maps.Req.Route.Route;
+import com.example.databaseCore.Repositories.Maps.CoordinatesRepository;
+import com.example.databaseCore.Repositories.Maps.VerifyClickedCoordinatesRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;

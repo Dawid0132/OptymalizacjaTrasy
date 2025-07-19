@@ -1,8 +1,9 @@
 package com.example.mapauthrest.Controller;
 
-import com.example.mapauthrest.DB.Entities.Coordinates;
-import com.example.mapauthrest.DB.Entities.VerifyClickedCoordinates;
-import com.example.mapauthrest.Pojo.Request.Coordinates_Req;
+
+import com.example.databaseCore.Entities.Maps.Coordinates;
+import com.example.databaseCore.Entities.Maps.VerifyClickedCoordinates;
+import com.example.databaseCore.Pojos.Maps.Req.Coordinates_Req;
 import com.example.mapauthrest.Service.MapRestApiService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

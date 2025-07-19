@@ -1,4 +1,4 @@
-package com.example.mapauthrest.Pojo.Request;
+package com.example.databaseCore.Pojos.Maps.Req;
 
 public class Coordinates_Req {
     private float latitude;

@@ -1,10 +1,9 @@
-package com.example.mapauthrest.DB.Entities;
+package com.example.databaseCore.Entities.Maps;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Entity
 @NamedQuery(name = "Coordinates.findById", query = "select c from Coordinates c where c.id=?1")

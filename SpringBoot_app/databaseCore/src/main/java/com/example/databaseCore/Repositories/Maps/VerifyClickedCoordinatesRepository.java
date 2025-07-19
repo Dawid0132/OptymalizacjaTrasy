@@ -1,6 +1,7 @@
-package com.example.mapauthrest.DB.Repositories;
+package com.example.databaseCore.Repositories.Maps;
 
-import com.example.mapauthrest.DB.Entities.VerifyClickedCoordinates;
+
+import com.example.databaseCore.Entities.Maps.VerifyClickedCoordinates;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

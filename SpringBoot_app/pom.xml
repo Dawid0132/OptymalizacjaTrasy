@@ -19,11 +19,11 @@
 
     <modules>
         <module>aTSPSecurity</module>
-        <module>mapAuthRest</module>
-        <module>mapAuthRestService</module>
-        <module>userAuthRest</module>
-        <module>userAuthRestService</module>
         <module>databaseCore</module>
+        <module>mapAuthRest</module>
+        <module>serviceMapAuthRest</module>
+        <module>userAuthRest</module>
+        <module>serviceUserAuthRest</module>
     </modules>
 
     <properties>

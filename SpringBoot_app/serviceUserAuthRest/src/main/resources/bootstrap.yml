@@ -1,5 +1,6 @@
-server:
-  port: 8091
 spring:
   application:
     name: userAuthRestService
+  cloud:
+    config:
+      uri: http://localhost:8888
