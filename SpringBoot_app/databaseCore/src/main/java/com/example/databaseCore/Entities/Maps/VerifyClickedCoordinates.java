@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-@NamedQuery(name = "VerifyClickedCoordinates.findByUserId", query = "select c from VerifyClickedCoordinates c where c.userId=?1")
 public class VerifyClickedCoordinates {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,15 +23,10 @@ public class VerifyClickedCoordinates {
     @NotNull
     private Float longitude;
 
-    @Column(unique = true)
-    @NotNull
-    private Long userId;
-
-    public VerifyClickedCoordinates(Long id, Float latitude, Float longitude, Long userId) {
+    public VerifyClickedCoordinates(Long id, Float latitude, Float longitude) {
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.userId = userId;
     }
 
     public VerifyClickedCoordinates() {
@@ -60,13 +54,5 @@ public class VerifyClickedCoordinates {
 
     public void setLongitude(Float longitude) {
         this.longitude = longitude;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 }

@@ -1,14 +1,14 @@
 package com.example.databaseCore.Entities.Maps;
 
+import com.example.databaseCore.Entities.User.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
-@NamedQuery(name = "Coordinates.findById", query = "select c from Coordinates c where c.id=?1")
-@NamedQuery(name = "Coordinates.findAllByUserId", query = "select c from Coordinates c where c.userId=?1")
-@NamedQuery(name = "Coordinates.deleteCoordinatesByIds", query = "delete from Coordinates c where c.id in ?1")
+@NamedQuery(name = "Coordinates.findByUserId", query = "select c from Coordinates c where c.user.id=?1")
 public class Coordinates {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,18 +26,27 @@ public class Coordinates {
     @NotNull
     private Float longitude;
 
-    @Column
-    @NotNull
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
+    private User user;
 
-    public Coordinates(Long id, Float latitude, Float longitude, Long userId) {
+    public Coordinates(Long id, Float latitude, Float longitude, User user) {
         this.id = id;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.userId = userId;
+        this.user = user;
     }
 
     public Coordinates() {
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Long getId() {
@@ -62,13 +71,5 @@ public class Coordinates {
 
     public void setLongitude(Float longitude) {
         this.longitude = longitude;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 }
