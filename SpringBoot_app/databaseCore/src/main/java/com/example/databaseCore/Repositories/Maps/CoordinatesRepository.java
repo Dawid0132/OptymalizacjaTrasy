@@ -10,10 +10,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CoordinatesRepository extends CrudRepository<Coordinates, Long> {
-    List<Coordinates> findAllByUserId(Long userId);
-
-    Optional<Coordinates> findById(Long id);
-
-    @Modifying
-    void deleteCoordinatesByIds(List<Long> ids);
+    List<Coordinates> findByUserId(Long id);
 }
