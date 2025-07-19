@@ -7,5 +7,4 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 
 public interface VerifyClickedCoordinatesRepository extends CrudRepository<VerifyClickedCoordinates, Long> {
-    Optional<VerifyClickedCoordinates> findByUserId(Long userId);
 }

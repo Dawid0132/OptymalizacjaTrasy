@@ -72,4 +72,3 @@ public class Coordinates {
     public void setLongitude(Float longitude) {
         this.longitude = longitude;
     }
-}
