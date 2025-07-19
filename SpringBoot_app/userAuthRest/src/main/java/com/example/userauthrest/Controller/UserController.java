@@ -1,7 +1,8 @@
 package com.example.userauthrest.Controller;
 
 
-import com.example.userauthrest.Pojo.Request.UserRegister;
+
+import com.example.databaseCore.Pojos.User.Req.UserRegister;
 import com.example.userauthrest.Service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

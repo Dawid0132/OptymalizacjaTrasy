@@ -1,4 +1,4 @@
-package com.example.userauthrest.Pojo.Request;
+package com.example.databaseCore.Pojos.User.Req;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

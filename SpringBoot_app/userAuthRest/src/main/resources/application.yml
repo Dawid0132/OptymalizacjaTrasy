@@ -4,9 +4,10 @@ spring:
   application:
     name: userAuthRest
   datasource:
-    password: password
-    url: jdbc:mysql://localhost:3306/User
+    url: jdbc:mysql://localhost:3306/SmartRoute
     username: root
+    password: password
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:

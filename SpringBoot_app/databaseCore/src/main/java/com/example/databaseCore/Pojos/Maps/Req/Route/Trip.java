@@ -1,4 +1,4 @@
-package com.example.mapauthrest.Pojo.Route;
+package com.example.databaseCore.Pojos.Maps.Req.Route;
 
 import java.util.List;
 

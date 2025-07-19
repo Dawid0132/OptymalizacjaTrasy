@@ -1,8 +1,8 @@
 package com.example.userauthrest.Service;
 
-import com.example.userauthrest.DB.Entities.User;
-import com.example.userauthrest.DB.Repositories.UserRepository;
-import com.example.userauthrest.Pojo.Request.UserRegister;
+import com.example.databaseCore.Entities.User.User;
+import com.example.databaseCore.Pojos.User.Req.UserRegister;
+import com.example.databaseCore.Repositories.User.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;

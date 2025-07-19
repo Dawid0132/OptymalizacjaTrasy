@@ -1,4 +1,4 @@
-package com.example.mapauthrest.DB.Entities;
+package com.example.databaseCore.Entities.Maps;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
