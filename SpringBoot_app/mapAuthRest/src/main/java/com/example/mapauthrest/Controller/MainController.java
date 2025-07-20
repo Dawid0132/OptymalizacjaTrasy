@@ -50,6 +50,10 @@ public class MainController {
         return mapRestApiService.getAllCoordinates(user_id);
     }
 
+    @DeleteMapping("trips/delete/{user_id}")
+    public ResponseEntity<List<Trips>> deleteTrip(@PathVariable("user_id") Long user_id, @RequestParam Long trip_id) {
+        return mapRestApiService.deleteTrip(user_id, trip_id);
+    }
     @PutMapping("trips/update/{user_id}")
     public ResponseEntity<List<Trips>> updateTrip(@PathVariable("user_id") Long user_id, @RequestParam Long trip_id) {
         return mapRestApiService.updateTrip(user_id, trip_id);

@@ -252,6 +252,23 @@ public class MapRestApiService {
         return (long) Math.ceil(totalTimeWithBreaks / maxTimePerDayIncludingBreaks);
     }
 
+    public ResponseEntity<List<Trips>> deleteTrip(Long userId, Long tripId) {
+        Optional<User> user = userRepository.findById(userId);
+
+        if (user.isPresent()) {
+            try {
+                User _user = user.get();
+                List<Trips> trips = _user.removeTrips(tripId);
+                userRepository.save(_user);
+                return ResponseEntity.ok(trips);
+            } catch (Exception e) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     public ResponseEntity<List<Trips>> updateTrip(Long userId, Long tripId) {
         Optional<User> user = userRepository.findById(userId);
 
