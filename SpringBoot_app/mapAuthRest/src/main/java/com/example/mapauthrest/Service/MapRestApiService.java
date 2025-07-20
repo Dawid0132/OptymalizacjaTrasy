@@ -1,11 +1,16 @@
 package com.example.mapauthrest.Service;
 
 import com.example.databaseCore.Entities.Maps.Coordinates;
+import com.example.databaseCore.Entities.Maps.CoordinatesForTrips;
 import com.example.databaseCore.Entities.Maps.VerifyClickedCoordinates;
+import com.example.databaseCore.Entities.User.User;
 import com.example.databaseCore.Pojos.Maps.Req.Coordinates_Req;
 import com.example.databaseCore.Pojos.Maps.Req.Route.Route;
+import com.example.databaseCore.Repositories.Maps.CoordinatesForTripsRepository;
 import com.example.databaseCore.Repositories.Maps.CoordinatesRepository;
+import com.example.databaseCore.Repositories.Maps.TripsRepository;
 import com.example.databaseCore.Repositories.Maps.VerifyClickedCoordinatesRepository;
+import com.example.databaseCore.Repositories.User.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -19,86 +24,31 @@ public class MapRestApiService {
 
     private final CoordinatesRepository coordinatesRepository;
     private final VerifyClickedCoordinatesRepository verifyClickedCoordinatesRepository;
+    private final CoordinatesForTripsRepository coordinatesForTripsRepository;
+
+    private final TripsRepository tripsRepository;
+
+    private final UserRepository userRepository;
     private final RestTemplate restTemplate;
 
-    public MapRestApiService(CoordinatesRepository coordinatesRepository, VerifyClickedCoordinatesRepository verifyClickedCoordinatesRepository, RestTemplate restTemplate) {
+    public MapRestApiService(CoordinatesRepository coordinatesRepository, VerifyClickedCoordinatesRepository verifyClickedCoordinatesRepository, CoordinatesForTripsRepository coordinatesForTripsRepository, TripsRepository tripsRepository, UserRepository userRepository, RestTemplate restTemplate) {
         this.coordinatesRepository = coordinatesRepository;
         this.verifyClickedCoordinatesRepository = verifyClickedCoordinatesRepository;
+        this.coordinatesForTripsRepository = coordinatesForTripsRepository;
+        this.tripsRepository = tripsRepository;
+        this.userRepository = userRepository;
         this.restTemplate = restTemplate;
-    }
-
-    public ResponseEntity<VerifyClickedCoordinates> updateClickedCoordinates(Long user_id, Coordinates_Req coordinates_req) {
-        Optional<VerifyClickedCoordinates> clickedCoordinates = verifyClickedCoordinatesRepository.findByUserId(user_id);
-
-        if (clickedCoordinates.isPresent()) {
-            try {
-                VerifyClickedCoordinates verifyClickedCoordinates = clickedCoordinates.get();
-                verifyClickedCoordinates.setLongitude(coordinates_req.getLongitude());
-                verifyClickedCoordinates.setLatitude(coordinates_req.getLatitude());
-                verifyClickedCoordinatesRepository.save(verifyClickedCoordinates);
-                return ResponseEntity.ok(verifyClickedCoordinates);
-            } catch (Exception e) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-        } else {
-            try {
-                VerifyClickedCoordinates verifyClickedCoordinates = new VerifyClickedCoordinates();
-                verifyClickedCoordinates.setUserId(user_id);
-                verifyClickedCoordinates.setLongitude(coordinates_req.getLongitude());
-                verifyClickedCoordinates.setLatitude(coordinates_req.getLatitude());
-                verifyClickedCoordinatesRepository.save(verifyClickedCoordinates);
-            } catch (Exception e) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-        }
-        return null;
-    }
-
-    public ResponseEntity<VerifyClickedCoordinates> getClickedCoordinates(Long user_id, Coordinates_Req coordinates_req) {
-        Optional<VerifyClickedCoordinates> clickedCoordinates = verifyClickedCoordinatesRepository.findByUserId(user_id);
-        List<Coordinates> coordinatesList = coordinatesRepository.findAllByUserId(user_id);
-
-
-        float epsilon = 0.00000001F;
-        boolean key = true;
-
-        if (!coordinatesList.isEmpty()) {
-            for (Coordinates coordinates : coordinatesList) {
-                if (Math.abs(coordinates.getLatitude() - coordinates_req.getLatitude()) < epsilon && Math.abs(coordinates.getLongitude() - coordinates_req.getLongitude()) < epsilon) {
-                    key = false;
-                }
-            }
-        }
-
-        if (clickedCoordinates.isPresent() && key) {
-            VerifyClickedCoordinates verifyClickedCoordinates = clickedCoordinates.get();
-            if (Math.abs(verifyClickedCoordinates.getLatitude() - coordinates_req.getLatitude()) < epsilon && Math.abs(verifyClickedCoordinates.getLongitude() - coordinates_req.getLongitude()) < epsilon) {
-                Coordinates coordinates = new Coordinates();
-                try {
-                    coordinates.setUserId(user_id);
-                    coordinates.setLongitude(coordinates_req.getLongitude());
-                    coordinates.setLatitude(coordinates_req.getLatitude());
-                    coordinatesRepository.save(coordinates);
-                    return ResponseEntity.ok(verifyClickedCoordinates);
-                } catch (Exception e) {
-                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-                }
-            } else {
-                return new ResponseEntity<>(HttpStatus.CONFLICT);
-            }
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    public ResponseEntity<List<Coordinates>> getAllCoordinates(Long user_id) {
-        List<Coordinates> coordinates = new ArrayList<Coordinates>(coordinatesRepository.findAllByUserId(user_id));
-        return ResponseEntity.ok(coordinates);
     }
 
     public ResponseEntity<Object> getRoute(Long user_id) {
 
-        List<Coordinates> coordinates = new ArrayList<Coordinates>(coordinatesRepository.findAllByUserId(user_id));
+        Optional<User> user = userRepository.findById(user_id);
+
+        if (user.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        List<Coordinates> coordinates = user.get().getCoordinates();
 
         if (coordinates.size() < 2) {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
@@ -139,7 +89,14 @@ public class MapRestApiService {
 
     public ResponseEntity<Object> getLegs(Long user_id) {
 
-        List<Coordinates> coordinates = new ArrayList<Coordinates>(coordinatesRepository.findAllByUserId(user_id));
+        Optional<User> user = userRepository.findById(user_id);
+
+        if (user.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        List<Coordinates> coordinates = user.get().getCoordinates();
+
 
         if (coordinates.size() < 2) {
             return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
@@ -177,14 +134,96 @@ public class MapRestApiService {
         }
     }
 
-    @Transactional
-    public ResponseEntity<Coordinates> deleteCoordinates(Long[] ids) {
-        try {
-            coordinatesRepository.deleteCoordinatesByIds(Arrays.asList(ids));
+    public ResponseEntity<VerifyClickedCoordinates> updateClickedCoordinates(Long user_id, Coordinates_Req coordinates_req) {
+        Optional<User> user = userRepository.findById(user_id);
 
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        if (user.isPresent()) {
+            try {
+                User _user = user.get();
+                VerifyClickedCoordinates verifyClickedCoordinates = new VerifyClickedCoordinates();
+                verifyClickedCoordinates.setLongitude(coordinates_req.getLongitude());
+                verifyClickedCoordinates.setLatitude(coordinates_req.getLatitude());
+                _user.setVerifyClickedCoordinates(verifyClickedCoordinates);
+                userRepository.save(_user);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<VerifyClickedCoordinates> getClickedCoordinates(Long user_id, Coordinates_Req coordinates_req) {
+        Optional<User> user = userRepository.findById(user_id);
+
+        if (user.isPresent()) {
+            User _user = user.get();
+
+            VerifyClickedCoordinates clickedCoordinates = _user.getVerifyClickedCoordinates();
+            List<Coordinates> coordinatesList = _user.getCoordinates();
+
+
+            float epsilon = 0.00000001F;
+            boolean key = true;
+
+            if (!coordinatesList.isEmpty()) {
+                for (Coordinates coordinates : coordinatesList) {
+                    if (Math.abs(coordinates.getLatitude() - coordinates_req.getLatitude()) < epsilon && Math.abs(coordinates.getLongitude() - coordinates_req.getLongitude()) < epsilon) {
+                        key = false;
+                    }
+                }
+            }
+
+            if (clickedCoordinates != null && key) {
+                if (Math.abs(clickedCoordinates.getLatitude() - coordinates_req.getLatitude()) < epsilon && Math.abs(clickedCoordinates.getLongitude() - coordinates_req.getLongitude()) < epsilon) {
+                    try {
+                        Coordinates coordinates = new Coordinates();
+                        coordinates.setLongitude(coordinates_req.getLongitude());
+                        coordinates.setLatitude(coordinates_req.getLatitude());
+                        _user.addCoordinates(coordinates);
+                        userRepository.save(_user);
+                        return ResponseEntity.ok(clickedCoordinates);
+                    } catch (Exception e) {
+                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    }
+                } else {
+                    return new ResponseEntity<>(HttpStatus.CONFLICT);
+                }
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<Coordinates> deleteCoordinates(Long user_id, List<Long> ids) {
+        Optional<User> user = userRepository.findById(user_id);
+
+        try {
+            if (user.isPresent()) {
+                User _user = user.get();
+                _user.removeCoordinates(ids);
+                userRepository.save(_user);
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    public ResponseEntity<List<Coordinates>> getAllCoordinates(Long user_id) {
+        Optional<User> user = userRepository.findById(user_id);
+        if (user.isPresent()) {
+            List<Coordinates> coordinates = coordinatesRepository.findByUserId(user_id);
+            return ResponseEntity.ok(coordinates);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 
