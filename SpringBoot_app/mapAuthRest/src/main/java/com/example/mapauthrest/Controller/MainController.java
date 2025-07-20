@@ -2,6 +2,7 @@ package com.example.mapauthrest.Controller;
 
 
 import com.example.databaseCore.Entities.Maps.Coordinates;
+import com.example.databaseCore.Entities.Maps.Trips;
 import com.example.databaseCore.Entities.Maps.VerifyClickedCoordinates;
 import com.example.databaseCore.Pojos.Maps.Req.Coordinates_Req;
 import com.example.mapauthrest.Service.MapRestApiService;
@@ -50,4 +51,8 @@ public class MainController {
     }
 
 
+    @GetMapping(path = "/trips/unfinished/{user_id}")
+    public ResponseEntity<List<Trips>> getAllUnfinishedTrips(@PathVariable("user_id") Long user_id) {
+        return mapRestApiService.getAllUnfinishedTrips(user_id);
+    }
 }

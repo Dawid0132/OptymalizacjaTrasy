@@ -2,6 +2,7 @@ package com.example.mapauthrest.Service;
 
 import com.example.databaseCore.Entities.Maps.Coordinates;
 import com.example.databaseCore.Entities.Maps.CoordinatesForTrips;
+import com.example.databaseCore.Entities.Maps.Trips;
 import com.example.databaseCore.Entities.Maps.VerifyClickedCoordinates;
 import com.example.databaseCore.Entities.User.User;
 import com.example.databaseCore.Pojos.Maps.Req.Coordinates_Req;
@@ -249,5 +250,27 @@ public class MapRestApiService {
         float maxTimePerDayIncludingBreaks = drivingLimitPerDayInSeconds + ((int) (drivingLimitPerDayInSeconds / breakIntervalInSeconds)) * breakDurationInSeconds;
 
         return (long) Math.ceil(totalTimeWithBreaks / maxTimePerDayIncludingBreaks);
+    }
+
+    public ResponseEntity<List<Trips>> getAllUnfinishedTrips(Long userId) {
+        try {
+            Optional<User> user = userRepository.findById(userId);
+
+            if (user.isPresent()) {
+                User _user = user.get();
+                List<Trips> unfinishedTrips = new ArrayList<>();
+                for (Trips trip : _user.getTrips()) {
+                    if (!trip.getFinished()) {
+                        unfinishedTrips.add(trip);
+                    }
+                }
+                return ResponseEntity.ok(unfinishedTrips);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 }
