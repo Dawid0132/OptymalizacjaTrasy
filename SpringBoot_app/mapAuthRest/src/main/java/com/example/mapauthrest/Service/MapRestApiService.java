@@ -7,6 +7,7 @@ import com.example.databaseCore.Entities.Maps.VerifyClickedCoordinates;
 import com.example.databaseCore.Entities.User.User;
 import com.example.databaseCore.Pojos.Maps.Req.Coordinates_Req;
 import com.example.databaseCore.Pojos.Maps.Req.Route.Route;
+import com.example.databaseCore.Pojos.Maps.Req.SavedTrips.SavedTripReq;
 import com.example.databaseCore.Repositories.Maps.CoordinatesForTripsRepository;
 import com.example.databaseCore.Repositories.Maps.CoordinatesRepository;
 import com.example.databaseCore.Repositories.Maps.TripsRepository;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -250,6 +252,67 @@ public class MapRestApiService {
         float maxTimePerDayIncludingBreaks = drivingLimitPerDayInSeconds + ((int) (drivingLimitPerDayInSeconds / breakIntervalInSeconds)) * breakDurationInSeconds;
 
         return (long) Math.ceil(totalTimeWithBreaks / maxTimePerDayIncludingBreaks);
+    }
+
+    public ResponseEntity<Trips> addTrip(Long userId, SavedTripReq savedTrips) {
+        try {
+            Optional<User> user = userRepository.findById(userId);
+
+            if (user.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            if (savedTrips.getStartDate().isBefore(LocalDate.now()) || savedTrips.getStartDate().isAfter(LocalDate.now().plusMonths(1))) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+            User _user = user.get();
+
+            Trips trips = new Trips();
+            trips.setStartDate(savedTrips.getStartDate());
+            trips.setEndDate(savedTrips.getStartDate().plusDays(calculateEndDate(savedTrips.getTrip().getDuration())));
+            trips.setDistance(savedTrips.getTrip().getDistance());
+            trips.setDuration(savedTrips.getTrip().getDuration());
+            trips.setCreatedAt(LocalDate.now());
+            trips.setFinished(Boolean.FALSE);
+
+
+            for (Coordinates_Req coordinates1 : savedTrips.getTrip().getCoordinates()) {
+                CoordinatesForTrips coordinatesForTrips1 = new CoordinatesForTrips();
+                coordinatesForTrips1.setLatitude(coordinates1.getLatitude());
+                coordinatesForTrips1.setLongitude(coordinates1.getLongitude());
+                trips.addCoordinatesForTrips(coordinatesForTrips1);
+            }
+
+            float epsilon = 0.00000001F;
+
+            for (Trips t : _user.getTrips()) {
+                Integer count = 0;
+                for (CoordinatesForTrips c : t.getCoordinates()) {
+                    for (CoordinatesForTrips c1 : trips.getCoordinates()) {
+                        if (!t.getFinished()) {
+                            if (Math.abs(c.getLatitude() - c1.getLatitude()) < epsilon && Math.abs(c.getLongitude() - c1.getLongitude()) < epsilon) {
+                                count++;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (count.equals(trips.getCoordinates().size())) {
+                    return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+                }
+            }
+
+
+            _user.addTrips(trips);
+            _user.getCoordinates().clear();
+            userRepository.save(_user);
+
+            return ResponseEntity.ok(trips);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     public ResponseEntity<List<Trips>> deleteTrip(Long userId, Long tripId) {

@@ -5,6 +5,7 @@ import com.example.databaseCore.Entities.Maps.Coordinates;
 import com.example.databaseCore.Entities.Maps.Trips;
 import com.example.databaseCore.Entities.Maps.VerifyClickedCoordinates;
 import com.example.databaseCore.Pojos.Maps.Req.Coordinates_Req;
+import com.example.databaseCore.Pojos.Maps.Req.SavedTrips.SavedTripReq;
 import com.example.mapauthrest.Service.MapRestApiService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,7 +50,10 @@ public class MainController {
     public ResponseEntity<List<Coordinates>> getAllCoordinates(@PathVariable("user_id") Long user_id) {
         return mapRestApiService.getAllCoordinates(user_id);
     }
-
+    @PostMapping(path = "/trips/{user_id}")
+    public ResponseEntity<Trips> addTrip(@PathVariable("user_id") Long user_id, @RequestBody SavedTripReq savedTrips) {
+        return mapRestApiService.addTrip(user_id, savedTrips);
+    }
     @DeleteMapping("trips/delete/{user_id}")
     public ResponseEntity<List<Trips>> deleteTrip(@PathVariable("user_id") Long user_id, @RequestParam Long trip_id) {
         return mapRestApiService.deleteTrip(user_id, trip_id);
