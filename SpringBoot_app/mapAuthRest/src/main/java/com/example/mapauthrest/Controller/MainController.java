@@ -50,7 +50,10 @@ public class MainController {
         return mapRestApiService.getAllCoordinates(user_id);
     }
 
-
+    @PutMapping("trips/update/{user_id}")
+    public ResponseEntity<List<Trips>> updateTrip(@PathVariable("user_id") Long user_id, @RequestParam Long trip_id) {
+        return mapRestApiService.updateTrip(user_id, trip_id);
+    }
     @GetMapping(path = "/trips/unfinished/{user_id}")
     public ResponseEntity<List<Trips>> getAllUnfinishedTrips(@PathVariable("user_id") Long user_id) {
         return mapRestApiService.getAllUnfinishedTrips(user_id);
