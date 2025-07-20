@@ -85,7 +85,6 @@ public class UserService {
         }
     }
 
-
     public ResponseEntity<Void> password_change(Long userId, PasswordChanged passwordChanged) {
         Optional<User> user = userRepository.findById(userId);
         try {

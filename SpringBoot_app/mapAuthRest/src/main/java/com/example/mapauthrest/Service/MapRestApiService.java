@@ -188,4 +188,27 @@ public class MapRestApiService {
         }
     }
 
+    public Long calculateEndDate(Float duration) {
+        final float drivingLimitPerDayInSeconds = 9 * 3600;
+        final float breakIntervalInSeconds = 4.5f * 3600;
+        final float breakDurationInSeconds = 45 * 60;
+
+        float totalTimeWithBreaks = 0f;
+        float remainingDrivingTime = duration;
+
+        while (remainingDrivingTime > 0) {
+            float todayDriving = Math.min(remainingDrivingTime, drivingLimitPerDayInSeconds);
+            int numberOfBreaks = (int) (todayDriving / breakIntervalInSeconds);
+
+            float breaksToday = numberOfBreaks * breakDurationInSeconds;
+
+            totalTimeWithBreaks += todayDriving + breaksToday;
+
+            remainingDrivingTime -= todayDriving;
+        }
+
+        float maxTimePerDayIncludingBreaks = drivingLimitPerDayInSeconds + ((int) (drivingLimitPerDayInSeconds / breakIntervalInSeconds)) * breakDurationInSeconds;
+
+        return (long) Math.ceil(totalTimeWithBreaks / maxTimePerDayIncludingBreaks);
+    }
 }

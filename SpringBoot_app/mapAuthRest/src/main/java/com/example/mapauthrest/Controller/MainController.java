@@ -39,14 +39,16 @@ public class MainController {
         return mapRestApiService.getClickedCoordinates(user_id, coordinates_req);
     }
 
+    @DeleteMapping(path = "/coordinates/{ids}")
+    public ResponseEntity<Coordinates> deleteCoordinates(@PathVariable("ids") Long[] ids) {
+        return mapRestApiService.deleteCoordinates(ids);
+    }
+
     @GetMapping(path = "/coordinates/{user_id}")
     public ResponseEntity<List<Coordinates>> getAllCoordinates(@PathVariable("user_id") Long user_id) {
         return mapRestApiService.getAllCoordinates(user_id);
     }
 
-    @DeleteMapping(path = "/coordinates/{ids}")
-    public ResponseEntity<Coordinates> deleteCoordinates(@PathVariable("ids") Long[] ids) {
-        return mapRestApiService.deleteCoordinates(ids);
-    }
+
 
 }
