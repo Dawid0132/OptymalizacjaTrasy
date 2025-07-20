@@ -1,6 +1,7 @@
 package com.example.servicemapauthrest.Controller;
 
 import com.example.servicemapauthrest.Pojo.Coordinates;
+import com.example.servicemapauthrest.Pojo.SavedTrips.SavedTripReq;
 import com.example.servicemapauthrest.Service.ServiceMapAuthRestService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -42,8 +43,23 @@ public class ServiceController {
         return ResponseEntity.ok(serviceMapAuthRestService.getListOfCoordinates(user_id, authToken));
     }
 
-    @GetMapping(path = "/deleteCoordinates/{id}")
-    public ResponseEntity<Void> deleteCoordinates(@PathVariable("id") Long[] coordinates_id, @RequestHeader("Authorization") String authToken) {
-        return ResponseEntity.ok(serviceMapAuthRestService.deleteCoordinates(coordinates_id, authToken));
+    @GetMapping(path = "/deleteCoordinates/{user_id}")
+    public ResponseEntity<Void> deleteCoordinates(@PathVariable("user_id") Long user_id, @RequestBody List<Long> ids, @RequestHeader("Authorization") String authToken) {
+        return ResponseEntity.ok(serviceMapAuthRestService.deleteCoordinates(user_id, ids, authToken));
+    }
+
+    @PostMapping(path = "/trips/{user_id}")
+    public ResponseEntity<Object> addTrips(@PathVariable("user_id") Long user_id, @RequestBody SavedTripReq savedTripReq, @RequestHeader("Authorization") String authToken) {
+        return ResponseEntity.ok(serviceMapAuthRestService.addTrips(user_id, savedTripReq, authToken));
+    }
+
+    @GetMapping(path = "/trips/delete/{user_id}")
+    public ResponseEntity<Object> deleteTrips(@PathVariable("user_id") Long user_id, @RequestParam Long trip_id, @RequestHeader("Authorization") String authToken) {
+        return ResponseEntity.ok(serviceMapAuthRestService.deleteTrips(user_id, trip_id, authToken));
+    }
+
+    @GetMapping(path = "/trips/unfinished/{user_id}")
+    public ResponseEntity<Object> getAllUnfinishedTrips(@PathVariable("user_id") Long user_id, @RequestHeader("Authorization") String authToken) {
+        return ResponseEntity.ok(serviceMapAuthRestService.getAllUnfinishedTrips(user_id, authToken));
     }
 }
