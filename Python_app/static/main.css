@@ -1,0 +1,46 @@
+body {
+    font-family: Roboto, sans-serif;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(#2e4057, #093d77);
+}
+
+.sunset {
+    color: #f6d8ae;
+}
+
+.BGsunset {
+    background-color: #f6d8ae;
+}
+
+.charcoal {
+    color: #2e4057;
+}
+
+.BGcharcoal {
+    background-color: #2e4057 !important;
+}
+
+.yale_blue {
+    color: #093d77;
+}
+
+.BGyale_blue {
+    background-color: #093d77;
+}
+
+.cerise {
+    color: #da4167;
+}
+
+.BGcerise {
+    background-color: #da4167;
+}
+
+.naples_yellow {
+    color: #f4d35e;
+}
+
+.BGnaples_yellow {
+    background-color: #f4d35e;
+}
