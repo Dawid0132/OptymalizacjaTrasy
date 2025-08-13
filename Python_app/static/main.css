@@ -49,3 +49,13 @@ body {
     margin-left: 4em;
     margin-right: 4em;
 }
+
+#FormsContainer {
+    justify-content: end;
+}
+
+@media (max-width: 960px) {
+    #FormsContainer {
+        justify-content: center;
+    }
+}
