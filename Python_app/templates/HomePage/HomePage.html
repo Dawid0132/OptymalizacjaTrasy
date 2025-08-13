@@ -56,5 +56,47 @@
         </div>
     </div>
 </section>
+<section class="section" id="Usługi">
+    <div style="height: 100vh;background-image: linear-gradient(#093d77,#2e4057);"
+         class="web_margin shadow d-flex justify-content-center align-items-center">
+        <div class="row row-cols-1 row-cols-md-3 g-2 text-center">
+            <div class="col">
+                <div class="card defaultCard">
+                    <img class="card-img-top"
+                         src="{{ url_for('static',filename='HomePage/Sektor2/brain.svg') }}"
+                         alt="Card1">
+                    <div class="card-body text-white">
+                        <h5 class="card-title sunset">Inteligentne planowanie podróży</h5>
+                        <p class="card-text">Aplikacja analizuje dane w czasie rzeczywistym
+                            aby zaproponować najkrótszą i najbardziej optymalną trasę</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card defaultCard">
+                    <img class="card-img-top" src="{{ url_for('static',filename='HomePage/Sektor2/map.svg') }}"
+                         alt="Card1">
+                    <div class="card-body text-white">
+                        <h5 class="card-title sunset">Zintegrowana mapa atrakcji</h5>
+                        <p class="card-text">Podczas planowania podróży możesz
+                            odkrywać ciekawe miejsca które będziesz miał po drodze: zabytki,restauracje,hotele</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card defaultCard">
+                    <img class="card-img-top"
+                         src="{{ url_for('static',filename='HomePage/Sektor2/responsive.svg') }}" alt="Card1">
+                    <div class="card-body text-white">
+                        <h5 class="card-title sunset">Aplikacja dostosowana do każdego urządzenia</h5>
+                        <p class="card-text">Aplikacja działa płynnie na komputerach
+                            jak i smartfonach. Niezależnie od tego, gdzie jesteś, masz dostęp do swoich tras i
+                            planów</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 </body>
 </html>
