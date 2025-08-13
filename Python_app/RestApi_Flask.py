@@ -1,20 +1,10 @@
 from flask import Blueprint, Flask, jsonify, render_template, redirect, request, url_for, session
 
-from config import UNPROTECTED_ENDPOINTS
-
 bp = Blueprint('RestApi_Flask', __name__, template_folder='templates', url_prefix='/smartroute')
 
 
-@bp.before_request
-def check_auth():
-    if request.endpoint in UNPROTECTED_ENDPOINTS:
-        if session.get('authenticated') is True:
-            return redirect(url_for('dashboard_api.index'))
-        return
 
-    if session.get('authenticated') is not True:
-        return redirect(url_for('user_api.login'))
-    return
+
 
 @bp.route('/homePage')
 def home_page():
@@ -24,6 +14,7 @@ def home_page():
 from user_api import user_api
 from map_api import map_api
 from dashboard_api import dashboard_api
+from trip_api import trip_api
 
 app = Flask(__name__)
 app.secret_key = 'secret_key'
@@ -31,6 +22,7 @@ app.register_blueprint(bp)
 app.register_blueprint(user_api)
 app.register_blueprint(map_api)
 app.register_blueprint(dashboard_api)
+app.register_blueprint(trip_api)
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -1,21 +1,7 @@
 import requests
 from flask import Blueprint, render_template, session, jsonify, request, redirect, url_for
 
-from config import UNPROTECTED_ENDPOINTS
-
 user_api = Blueprint('user_api', __name__, template_folder='templates', url_prefix='/user')
-
-
-@user_api.before_request
-def check_auth():
-    if request.endpoint in UNPROTECTED_ENDPOINTS:
-        if session.get('authenticated') is True:
-            return redirect(url_for('dashboard_api.index'))
-        return
-
-    if session.get('authenticated') is not True:
-        return redirect(url_for('user_api.login'))
-    return
 
 
 @user_api.route('/login', methods=['GET'])
