@@ -26,17 +26,17 @@ a:hover {
     border: none;
 }
 
+.defaultLeftCard {
+    background-color: rgba(0, 0, 0, 0);
+    border: none;
+}
+
 .defaultCard:hover > .card-body > h5 {
     color: #f6d8ae;
 }
 
 .defaultCard:hover > .card-body > p {
     color: #f6d8ae;
-}
-
-.defaultLeftCard {
-    background-color: rgba(0, 0, 0, 0);
-    border: none;
 }
 
 .section3tag {
