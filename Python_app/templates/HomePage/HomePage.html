@@ -31,7 +31,6 @@
                             class="sunset">Video</span></a>
                     <a id="Cechy_link" class="custom_link nav-link mt-1"><span
                             class="sunset">Cechy</span></a>
-                    <a id="Newsletter_link" class="custom_link nav-link mt-1"><span class="sunset">Nowości</span></a>
                 </div>
                 <div class="d-flex flex-column flex-lg-row align-items-center justify-content-center sunset rounded-3 text-center">
                     <a id="Logowanie" class="custom_link nav-link rounded-3 BGcerise mt-1">
@@ -93,6 +92,25 @@
                             jak i smartfonach. Niezależnie od tego, gdzie jesteś, masz dostęp do swoich tras i
                             planów</p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="section" id="Video">
+    <div style="height: 100vh;background-image: linear-gradient(#2e4057,#093d77);"
+         class="web_margin shadow d-flex justify-content-center align-items-center">
+        <div id="videoContainer" class="row row-cols-1 row-cols-lg-2">
+            <div class="col">
+                <video class="w-100" controls>
+                    <source src="{{ url_for('static',filename='HomePage/Sektor3/music.mp3') }}">
+                </video>
+            </div>
+            <div class="col">
+                <div style="font-size: 2vw;" class="text-center text-white">
+                    <h1 class="sunset">Zasilanie przez OSRM i inteligentne algorytmy optymalizacji tras</h1><br>
+                    SmartRoute integruje dane geolokalizacyjne i analizę tras, by zaoferować Ci najbardziej
+                    efektywną podróż.
                 </div>
             </div>
         </div>
