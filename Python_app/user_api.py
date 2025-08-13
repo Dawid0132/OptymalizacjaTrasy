@@ -1,7 +1,7 @@
 import requests
 from flask import Blueprint, render_template, session, jsonify, request, redirect, url_for
 
-from Python_app.RestApi_Flask import UNPROTECTED_ENDPOINTS
+from config import UNPROTECTED_ENDPOINTS
 
 user_api = Blueprint('user_api', __name__, template_folder='templates', url_prefix='/user')
 

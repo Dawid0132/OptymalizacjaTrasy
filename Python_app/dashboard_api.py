@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, request
 
-from Python_app.RestApi_Flask import UNPROTECTED_ENDPOINTS
+from config import UNPROTECTED_ENDPOINTS
 
 dashboard_api = Blueprint('dashboard_api', __name__, template_folder='templates', url_prefix='/dashboard')
 

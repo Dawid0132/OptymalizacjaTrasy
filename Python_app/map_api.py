@@ -6,7 +6,7 @@ from folium import folium
 from folium import Marker, LatLngPopup, GeoJson, Element
 from folium.plugins import MousePosition
 from folium.template import Template
-from RestApi_Flask import UNPROTECTED_ENDPOINTS
+from config import UNPROTECTED_ENDPOINTS
 
 map_api = Blueprint('map_api', __name__, template_folder='templates', url_prefix='/map')
 

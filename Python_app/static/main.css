@@ -9,7 +9,6 @@ body {
     color: #f6d8ae;
 }
 
-
 .BGsunset {
     background-color: #f6d8ae;
 }
@@ -44,4 +43,9 @@ body {
 
 .BGnaples_yellow {
     background-color: #f4d35e;
+}
+
+.web_margin {
+    margin-left: 4em;
+    margin-right: 4em;
 }
