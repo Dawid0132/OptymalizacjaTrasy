@@ -6,21 +6,10 @@ from folium import folium
 from folium import Marker, LatLngPopup, GeoJson, Element
 from folium.plugins import MousePosition
 from folium.template import Template
-from config import UNPROTECTED_ENDPOINTS
 
 map_api = Blueprint('map_api', __name__, template_folder='templates', url_prefix='/map')
 
 
-@map_api.before_request
-def check_auth():
-    if request.endpoint in UNPROTECTED_ENDPOINTS:
-        if session.get('authenticated') is True:
-            return redirect(url_for('dashboard_api.index'))
-        return
-
-    if session.get('authenticated') is not True:
-        return redirect(url_for('user_api.login'))
-    return
 
 
 def getPlacesForVist(user_id, token):
@@ -389,21 +378,12 @@ def verify():
         return jsonify({"message": "Nie mogę dodać współrzędnych"}), 400
 
 
-@map_api.route('/history/roads/<int:id>', methods=['GET'])
-def history(id):
-    return jsonify({"message": "history"}), 200
-
-
-@map_api.route('/future/roads/<int:id>', methods=['GET'])
-def future(id):
-    return jsonify({"message": "future"}), 200
-
 
 @map_api.route("/selectCoordinates", methods=['GET'])
 def selectCoordinates():
-    return render_template('/Map/SelectCoordinates/index.html')
+    return render_template('/Dashboard/SelectCoordinates/SelectCoordinates.html')
 
 
 @map_api.route('/display_route')
 def display_route():
-    return render_template('/Map/Result/display_route.html')
+    return render_template('/Map/Result/DisplayRoute.html')
