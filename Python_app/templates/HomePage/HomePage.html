@@ -3,6 +3,7 @@
 <head>
     <link rel="icon" href="{{ url_for('static',filename='favicon.ico') }}" type="image/x-icon">
     <meta charset="UTF-8">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" rel="stylesheet"/>
     <meta charset="UTF-8">
@@ -65,9 +66,12 @@
                          src="{{ url_for('static',filename='HomePage/Sektor2/brain.svg') }}"
                          alt="Card1">
                     <div class="card-body text-white">
-                        <h5 class="card-title sunset">Inteligentne planowanie podróży</h5>
-                        <p class="card-text">Aplikacja analizuje dane w czasie rzeczywistym
-                            aby zaproponować najkrótszą i najbardziej optymalną trasę</p>
+                        <div class="card-title sunset h5 d-flex justify-content-center align-items-center">Inteligentne
+                            planowanie podróży
+                        </div>
+                        <div class="card-text">Aplikacja analizuje dane w czasie rzeczywistym
+                            aby zaproponować najkrótszą i najbardziej optymalną trasę
+                        </div>
                     </div>
                 </div>
             </div>
@@ -76,9 +80,12 @@
                     <img class="card-img-top" src="{{ url_for('static',filename='HomePage/Sektor2/map.svg') }}"
                          alt="Card1">
                     <div class="card-body text-white">
-                        <h5 class="card-title sunset">Zintegrowana mapa atrakcji</h5>
-                        <p class="card-text">Podczas planowania podróży możesz
-                            odkrywać ciekawe miejsca które będziesz miał po drodze: zabytki,restauracje,hotele</p>
+                        <div class="card-title sunset h5 d-flex justify-content-center align-items-center">Zintegrowana
+                            mapa atrakcji
+                        </div>
+                        <div class="card-text">Podczas planowania podróży możesz
+                            odkrywać ciekawe miejsca które będziesz miał po drodze: zabytki, restauracje, hotele
+                        </div>
                     </div>
                 </div>
             </div>
@@ -86,11 +93,14 @@
                 <div class="card defaultCard">
                     <img class="card-img-top"
                          src="{{ url_for('static',filename='HomePage/Sektor2/responsive.svg') }}" alt="Card1">
-                    <div class="card-body text-white">
-                        <h5 class="card-title sunset">Aplikacja dostosowana do każdego urządzenia</h5>
-                        <p class="card-text">Aplikacja działa płynnie na komputerach
+                    <div class="card-body text-white align-middle">
+                        <div class="card-title sunset h5 d-flex justify-content-center align-items-center">Aplikacja
+                            dostosowana do każdego urządzenia
+                        </div>
+                        <div class="card-text">Aplikacja działa płynnie na komputerach
                             jak i smartfonach. Niezależnie od tego, gdzie jesteś, masz dostęp do swoich tras i
-                            planów</p>
+                            planów
+                        </div>
                     </div>
                 </div>
             </div>
@@ -202,5 +212,9 @@
         </div>
     </div>
 </section>
+<script>
+    const upArrowSrc = "{{ url_for('static',filename='HomePage/arrow_up.svg') }}"
+</script>
+<script src="{{ url_for('static',filename='HomePage/homepage.js') }}"></script>
 </body>
 </html>
