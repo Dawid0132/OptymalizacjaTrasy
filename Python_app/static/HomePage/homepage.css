@@ -1,0 +1,14 @@
+a:hover {
+    cursor: pointer;
+}
+
+.custom_link {
+    text-decoration: none;
+    color: inherit;
+    padding: 0.7em;
+}
+
+.custom_link:hover > *:first-child {
+    -webkit-text-stroke: 1px #f6d8ae;
+    text-shadow: 0px 2px 4px #da4167;
+}

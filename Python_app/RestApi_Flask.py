@@ -1,16 +1,9 @@
 from flask import Blueprint, Flask, jsonify, render_template, redirect, request, url_for, session
-import folium
-from folium.plugins import MousePosition
-import os
-from dotenv import load_dotenv
-import logging
-import requests
-from jinja2 import Template
+
+from config import UNPROTECTED_ENDPOINTS
 
 bp = Blueprint('RestApi_Flask', __name__, template_folder='templates', url_prefix='/smartroute')
 
-UNPROTECTED_ENDPOINTS = ['RestApi_Flask.home_page', 'user_api.login', 'user_api.register',
-                         'user_api.auth_login']
 
 @bp.before_request
 def check_auth():
@@ -22,19 +15,6 @@ def check_auth():
     if session.get('authenticated') is not True:
         return redirect(url_for('user_api.login'))
     return
-
-
-@bp.before_request
-def check_auth():
-    if request.endpoint in UNPROTECTED_ENDPOINTS:
-        if session.get('authenticated') is True:
-            return redirect(url_for('dashboard_api.index'))
-        return
-
-    if session.get('authenticated') is not True:
-        return redirect(url_for('user_api.login'))
-    return
-
 
 @bp.route('/homePage')
 def home_page():
