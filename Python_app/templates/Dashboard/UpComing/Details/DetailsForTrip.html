@@ -5,6 +5,54 @@
     <title>Szczegóły trasy</title>
 </head>
 <body>
+{% extends "Dashboard/Dashboard.html" %}
+{% block css %}
+{% endblock %}
+{% block content %}
+    <div class="sunset" id="spinner" style="display: block">
+        <div class="container-fluid d-flex flex-column vh-100 align-items-center justify-content-center">
+            <div class="row align-items-center justify-content-center">
+                <div class="spinner-border text-primary" role="status" style="width: 6rem; height: 6rem;">
+                    <span class="visually-hidden">Ładowanie...</span>
+                </div>
+                <div class="h3 text-center mt-3">Trwa generowanie trasy. Proszę czekać...</div>
+            </div>
+        </div>
+    </div>
+    <div id="body" class="container-fluid sunset" style="display: none">
+        <div class="row d-flex justify-content-between">
+            <div class="col-6">
+                <div id="up_part">
+                    <h1 class="text-center text-decoration-underline">Trasa przejazdu</h1>
+                </div>
+                <div class="mt-3" id="legs">
 
+                </div>
+                <div class="mt-3 mb-3" id="startContainer">
+                    <form id="startForm" class="row">
+                        <div class="col-12 mt-1">
+                            <button type="submit" id="startBtn" class="btn btn-success w-100">Start</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+            <div class="col-6 vh-100 mb-3" id="map_container">
+                <iframe height="100%" id="map_frame"
+                        src="{{ url_for('static',filename=path_to_map) }}" width="100%"></iframe>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module"
+            src="{{ url_for('static',filename='/Dashboard/UpComing/preview.js') }}"></script>
+    <script>
+        const map_name = {{ map_name | tojson }}
+
+        const id_map = {{ id_map | tojson }}
+    </script>
+{% endblock %}
 </body>
 </html>
