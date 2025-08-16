@@ -2,9 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Trasa</title>
 </head>
 <body>
+{% extends "Dashboard/Dashboard.html" %}
+{% block css %}
+{% endblock %}
+{% block content %}
+    <div id="body" class="container-fluid sunset">
+        <div class="row d-flex justify-content-between">
+            <div class="col-6">
+                <div class="mt-3 mb-3" id="saveContainer">
+                    <form id="saveForm" class="row">
+                        <div class="col-12">
+                            <label for="startdate" class="form-label">Rozpoczęcie trasy</label>
+                            <input class="form-control" type="date" id="startdate" placeholder="Wybierz datę" required/>
+                        </div>
+                        <div class="col-12 mt-1">
+                            <button type="submit" id="saveBtn" class="btn btn-primary w-100">Zapisz</button>
+                        </div>
 
+                    </form>
+
+                </div>
+            </div>
+            <div class="col-6 vh-100 mb-3" id="map_container">
+                <iframe id="map_container_frame" height="100%" src="{{ url_for('static',filename='map.html') }}"
+                        width="100%"></iframe>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module" src="{{ url_for('static',filename='/Dashboard/Result/result.js') }}"></script>
+    <script>
+        const map_name = {{ map_name | tojson }}
+        const iframe = $('#map_container_frame')
+        iframe.attr('id', map_name)
+    </script>
+{% endblock %}
 </body>
 </html>
