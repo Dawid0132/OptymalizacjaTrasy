@@ -2,9 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Generowanie trasy</title>
 </head>
 <body>
-
+{% extends "Dashboard/Dashboard.html" %}
+{% block css %}
+{% endblock %}
+{% block content %}
+<div class="sunset" id="spinner" style="display: none">
+    <div class="container-fluid d-flex flex-column vh-100 align-items-center justify-content-center">
+        <div class="row align-items-center justify-content-center">
+            <div class="spinner-border text-primary" role="status" style="width: 6rem; height: 6rem;">
+                <span class="visually-hidden">Ładowanie...</span>
+            </div>
+            <div class="h3 text-center mt-3">Trwa generowanie trasy. Proszę czekać...</div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid sunset pt-2 pb-2" id="body">
+    <div class="row d-flex justify-content-between">
+        <div class="col-6">
+            <div id="up_part">
+                <h1 class="text-center text-decoration-underline">Dodaj współrzędne trasy</h1>
+                <form id="add_location_form" class="d-flex flex-column">
+                    <div>
+                        <label class="form-label mt-2" for="latitude">Wprowadź szerokość geograficzną</label>
+                        <input class="form-control w-50" id="latitude" name="latitude" placeholder="58.21"
+                               type="text"/>
+                        <label class="form-label mt-2" for="longitude">Wprowadź długość geograficzną</label>
+                        <input class="form-control w-50" id="longitude" name="longitude" placeholder="21.38"
+                               type="text"/>
+                    </div>
+                    <div class="row mt-3 justify-content-end" id="add_button_up_part">
+                        <div class="col col-sm-12">
+                            <input class="btn btn-primary w-100" type="submit" value="Dodaj"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="mt-3" id="middle_part">
+                <table class="table table-dark table-striped" id="places_for_visit">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Usuń</th>
+                        <th>Szerokość</th>
+                        <th>Długość</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="row justify-content-end mt-3 mb-3" id="down_part">
+                <div class="col col-sm-6">
+                    <button id="remove_coordinates_btn" class="btn btn-primary w-100">
+                        Usuń
+                    </button>
+                </div>
+                <div class="col col-sm-6">
+                    <button id="generate_road_btn" class="btn btn-primary w-100">Generuj</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 vh-100 pt-2 pb-2" id="map_container">
+            <iframe id="map_frame" height="100%" src="{{ url_for('static',filename='map.html') }}"
+                    width="100%"></iframe>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="module"
+        src="{{ url_for('static',filename='Dashboard/SelectCoordinates/selectCoordinates.js') }}"></script>
+<script>
+    const mapName = {{ m_name | tojson }}
+    const location_coordinates = {{ location | tojson }}
+</script>
+{% endblock %}
 </body>
 </html>
