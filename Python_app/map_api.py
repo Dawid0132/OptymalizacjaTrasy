@@ -10,8 +10,6 @@ from folium.template import Template
 map_api = Blueprint('map_api', __name__, template_folder='templates', url_prefix='/map')
 
 
-
-
 def getPlacesForVist(user_id, token):
     try:
         response = requests.get(
@@ -49,22 +47,8 @@ def generateRoad(user_id, token):
         return jsonify({"message": "Nie mogę wygenerować trasy"})
 
 
-def loadMap(placesForVisit, location):
-    last_element = len(placesForVisit) - 1
-
-    m = folium.Map(location=[float(placesForVisit[last_element]['latitude']),
-                             float(placesForVisit[last_element]['longitude'])],
-                   zoom_start=12)
-
-    if not location:
-        for idx, place in enumerate(placesForVisit, start=1):
-            Marker([float(place['latitude']), float(place['longitude'])],
-                   popup=f"{place['latitude']},{place['longitude']}",
-                   tooltip=f"{idx}").add_to(m)
-    else:
-        Marker(
-            [float(placesForVisit[last_element]['latitude']), float(placesForVisit[last_element]['longitude'])],
-            popup="Twoja lokalizacja", tooltip="Jesteś tutaj").add_to(m)
+def loadMap():
+    m = folium.Map()
 
     m.add_child(LatLngPopup())
 
@@ -73,50 +57,12 @@ def loadMap(placesForVisit, location):
 
     m_name = m.get_name()
 
-    template_string = """
-                <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    const name = {{ m_name | tojson }}
-
-                    const map = window[name]
-
-                    map.on('click',function(e){
-                        const lat = e.latlng.lat.toFixed(4)
-                        const lng = e.latlng.lng.toFixed(4)
-
-                        const data = {
-                        latitude: lat,
-                        longitude: lng
-                        }
-
-                        fetch(`/map/verify`,{
-                            method: 'POST',
-                            headers: {
-                            'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(data)
-                        })
-                        .then(response => response.json())
-                        .then(data => {})
-                        .catch((e) => {
-                            console.error(e)
-                        })
-
-                    })
-                })
-            </script>
-                """
-
-    template = Template(template_string)
-    click_js = template.render(m_name=m_name)
-
-    m.get_root().html.add_child(folium.Element(click_js))
-
-    map_html_path = os.path.join('FlaskApp', 'static', 'map.html')
+    map_html_path = os.path.join(current_app.root_path, 'static', 'map.html')
 
     try:
         m.save(map_html_path)
         print(f"Mapa zapisana: {map_html_path}")
+        return m_name
     except Exception as e:
         print(f"Błąd podczas zapisywania mapy: {e}")
     return jsonify({"error": "Failed to save the map"}), 500
@@ -378,10 +324,15 @@ def verify():
         return jsonify({"message": "Nie mogę dodać współrzędnych"}), 400
 
 
-
 @map_api.route("/selectCoordinates", methods=['GET'])
 def selectCoordinates():
-    return render_template('/Dashboard/SelectCoordinates/SelectCoordinates.html')
+    lat = float(session.get("latitude", 52.237049))
+    lon = float(session.get("longitude", 21.017532))
+
+    m_name = loadMap()
+
+    return render_template('/Dashboard/SelectCoordinates/SelectCoordinates.html', m_name=m_name,
+                           location={"latitude": lat, "longitude": lon})
 
 
 @map_api.route('/display_route')
