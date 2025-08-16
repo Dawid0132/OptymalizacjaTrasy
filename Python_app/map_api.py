@@ -335,6 +335,8 @@ def selectCoordinates():
                            location={"latitude": lat, "longitude": lon})
 
 
-@map_api.route('/display_route')
+@map_api.route('/display_route', methods=['GET'])
 def display_route():
-    return render_template('/Map/Result/DisplayRoute.html')
+    m_name = loadMap()
+
+    return render_template('/Dashboard/Result/DisplayRoute.html', map_name=m_name)
