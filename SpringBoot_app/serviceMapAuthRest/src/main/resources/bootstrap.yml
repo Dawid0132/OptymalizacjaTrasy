@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: mapAuthRestService
+  cloud:
+    config:
+      uri: http://localhost:8888
