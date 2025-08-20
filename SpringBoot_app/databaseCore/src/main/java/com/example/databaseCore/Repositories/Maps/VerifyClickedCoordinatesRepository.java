@@ -1,0 +1,8 @@
+package com.example.databaseCore.Repositories.Maps;
+
+
+import com.example.databaseCore.Entities.Maps.VerifyClickedCoordinates;
+import org.springframework.data.repository.CrudRepository;
+
+public interface VerifyClickedCoordinatesRepository extends CrudRepository<VerifyClickedCoordinates, Long> {
+}
