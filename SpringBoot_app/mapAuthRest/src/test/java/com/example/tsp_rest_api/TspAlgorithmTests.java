@@ -176,45 +176,45 @@ public class TspAlgorithmTests {
         Assertions.assertTrue(isSamePoint, "First and last points should be the same (closed cycle)");
     }
 
-//    @Test
-//    void measureRouteGenerationTimeFor30Points() {
-//        for (Coordinates_Req coordinate : coordinates30) {
-//            Coordinates coordinates = new Coordinates();
-//            coordinates.setLongitude(coordinate.getLongitude());
-//            coordinates.setLatitude(coordinate.getLatitude());
-//            testUser.addCoordinates(coordinates);
-//        }
-//        userRepository.save(testUser);
-//
-//        long startTime = System.nanoTime();
-//        ResponseEntity<Object> response = tspRestApiService.getRoute(testUser.getId());
-//        long endTime = System.nanoTime();
-//
-//        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-//        Assertions.assertNotNull(response.getBody());
-//
-//        double durationSeconds = (endTime - startTime) / 1_000_000_000.0;
-//        System.out.printf("Czas generowania trasy dla 30 punktów: %.3f sekund%n", durationSeconds);
-//    }
-//
-//    @Test
-//    void measureRouteGenerationTimeFor10Points() {
-//        for (Coordinates_Req coordinate : coordinates10) {
-//            Coordinates coordinates = new Coordinates();
-//            coordinates.setLongitude(coordinate.getLongitude());
-//            coordinates.setLatitude(coordinate.getLatitude());
-//            testUser.addCoordinates(coordinates);
-//        }
-//        userRepository.save(testUser);
-//
-//        long startTime = System.nanoTime();
-//        ResponseEntity<Object> response = tspRestApiService.getRoute(testUser.getId());
-//        long endTime = System.nanoTime();
-//
-//        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-//        Assertions.assertNotNull(response.getBody());
-//
-//        double durationSeconds = (endTime - startTime) / 1_000_000_000.0;
-//        System.out.printf("Czas generowania trasy dla 10 punktów: %.3f sekund%n", durationSeconds);
-//    }
+    @Test
+    void measureRouteGenerationTimeFor30Points() {
+        for (Coordinates_Req coordinate : coordinates30) {
+            Coordinates coordinates = new Coordinates();
+            coordinates.setLongitude(coordinate.getLongitude());
+            coordinates.setLatitude(coordinate.getLatitude());
+            testUser.addCoordinates(coordinates);
+        }
+        userRepository.save(testUser);
+
+        long startTime = System.nanoTime();
+        ResponseEntity<Object> response = tspRestApiService.getRoute(testUser.getId());
+        long endTime = System.nanoTime();
+
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertNotNull(response.getBody());
+
+        double durationSeconds = (endTime - startTime) / 1_000_000_000.0;
+        System.out.printf("Czas generowania trasy dla 30 punktów: %.3f sekund%n", durationSeconds);
+    }
+
+    @Test
+    void measureRouteGenerationTimeFor10Points() {
+        for (Coordinates_Req coordinate : coordinates10) {
+            Coordinates coordinates = new Coordinates();
+            coordinates.setLongitude(coordinate.getLongitude());
+            coordinates.setLatitude(coordinate.getLatitude());
+            testUser.addCoordinates(coordinates);
+        }
+        userRepository.save(testUser);
+
+        long startTime = System.nanoTime();
+        ResponseEntity<Object> response = tspRestApiService.getRoute(testUser.getId());
+        long endTime = System.nanoTime();
+
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
+        Assertions.assertNotNull(response.getBody());
+
+        double durationSeconds = (endTime - startTime) / 1_000_000_000.0;
+        System.out.printf("Czas generowania trasy dla 10 punktów: %.3f sekund%n", durationSeconds);
+    }
 }
