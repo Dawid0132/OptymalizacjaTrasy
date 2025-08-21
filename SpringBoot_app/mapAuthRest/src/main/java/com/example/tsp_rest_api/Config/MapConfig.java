@@ -25,8 +25,6 @@ public class MapConfig {
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry.anyRequest().permitAll())
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(customCorsConfiguration));
         return httpSecurity.build();
-
-
     }
 
     @Bean

@@ -69,7 +69,7 @@ public class MapsTests {
         ResponseEntity<List<Coordinates>> getResponse = tspRestApiService.getClickedCoordinates(user_id, coordinates_req);
         assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(getResponse.getBody()).hasSize(1);
-        Coordinates saved = getResponse.getBody().getFirst();
+        Coordinates saved = getResponse.getBody().get(0);
         assertThat(saved.getLatitude()).isEqualTo(coordinates_req.getLatitude());
         assertThat(saved.getLongitude()).isEqualTo(coordinates_req.getLongitude());
         verify(userRepository, times(2)).findById(user_id);
@@ -103,7 +103,7 @@ public class MapsTests {
         // Assert
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).hasSize(1);
-        assertThat(response.getBody().getFirst().getId()).isEqualTo(2L);
+        assertThat(response.getBody().get(0).getId()).isEqualTo(2L);
 
         verify(userRepository).save(user);
     }
@@ -417,7 +417,7 @@ public class MapsTests {
         ResponseEntity<List<SummaryOfTrips>> response = tspRestApiService.getAllFinishedTrips(userId);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).hasSize(1);
-        SummaryOfTrips result = response.getBody().getFirst();
+        SummaryOfTrips result = response.getBody().get(0);
         assertThat(result.getStartDateOfTrip()).isEqualTo(startDate);
         assertThat(result.getEndDateOfTrip()).isEqualTo(endDate);
         assertThat(result.getRealisedEndDateOfTrip()).isEqualTo(finishedAt);

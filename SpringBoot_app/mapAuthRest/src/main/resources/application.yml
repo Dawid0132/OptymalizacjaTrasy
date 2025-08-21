@@ -4,9 +4,9 @@ spring:
   application:
     name: tsp_rest_api
   datasource:
-    url: jdbc:mysql://localhost:3306/SmartRoute
-    username: root
-    password: password
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/SmartRoute}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect

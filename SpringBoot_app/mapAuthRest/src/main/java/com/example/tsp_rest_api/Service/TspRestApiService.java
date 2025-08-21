@@ -1,15 +1,20 @@
 package com.example.tsp_rest_api.Service;
 
 
-import com.example.databaseCore.Entities.Maps.*;
+import com.example.databaseCore.Entities.Maps.CoordinatesForTrips;
+import com.example.databaseCore.Entities.Maps.Coordinates;
+import com.example.databaseCore.Entities.Maps.Trips;
+import com.example.databaseCore.Entities.Maps.VerifyClickedCoordinates;
+import com.example.databaseCore.Entities.Maps.IsFinished;
+import com.example.databaseCore.Entities.Maps.MeasuringTime;
 import com.example.databaseCore.Entities.User.User;
 import com.example.databaseCore.Pojos.Maps.Req.Coordinates_Req;
 import com.example.databaseCore.Pojos.Maps.Req.Route.Route;
 import com.example.databaseCore.Pojos.Maps.Req.SavedTrips.SavedTripReq;
 import com.example.databaseCore.Pojos.Maps.Res.SummaryOfTrips;
-import com.example.databaseCore.Repositories.Maps.*;
+import com.example.databaseCore.Repositories.Maps.CoordinatesRepository;
+import com.example.databaseCore.Repositories.Maps.TripsRepository;
 import com.example.databaseCore.Repositories.User.UserRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -21,28 +26,19 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
-@Slf4j
 public class TspRestApiService {
 
     private final CoordinatesRepository coordinatesRepository;
-    private final VerifyClickedCoordinatesRepository verifyClickedCoordinatesRepository;
-
-    private final CoordinatesForTripsRepository coordinatesForTripsRepository;
 
     private final TripsRepository tripsRepository;
-
-    private final MeasuringTimeRepository measuringTimeRepository;
 
     private final UserRepository userRepository;
 
     private final RestTemplate restTemplate;
 
-    public TspRestApiService(CoordinatesRepository coordinatesRepository, VerifyClickedCoordinatesRepository verifyClickedCoordinatesRepository, CoordinatesForTripsRepository coordinatesForTripsRepository, TripsRepository tripsRepository, MeasuringTimeRepository measuringTimeRepository, UserRepository userRepository, RestTemplate restTemplate) {
+    public TspRestApiService(CoordinatesRepository coordinatesRepository, TripsRepository tripsRepository, UserRepository userRepository, RestTemplate restTemplate) {
         this.coordinatesRepository = coordinatesRepository;
-        this.verifyClickedCoordinatesRepository = verifyClickedCoordinatesRepository;
-        this.coordinatesForTripsRepository = coordinatesForTripsRepository;
         this.tripsRepository = tripsRepository;
-        this.measuringTimeRepository = measuringTimeRepository;
         this.userRepository = userRepository;
         this.restTemplate = restTemplate;
     }
@@ -165,7 +161,7 @@ public class TspRestApiService {
                 ResponseEntity<Route> response = restTemplate.exchange(url, HttpMethod.GET, entity, Route.class, map);
 
 
-                return ResponseEntity.ok(response.getBody().getTrips().getFirst().getLegs());
+                return ResponseEntity.ok(response.getBody().getTrips().get(0).getLegs());
             } catch (Exception e) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
@@ -349,7 +345,6 @@ public class TspRestApiService {
 
             return ResponseEntity.ok(trips);
         } catch (Exception e) {
-            log.error("Deserialization error: ", e);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
