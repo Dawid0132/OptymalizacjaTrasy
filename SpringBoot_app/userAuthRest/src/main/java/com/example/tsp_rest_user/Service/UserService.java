@@ -6,8 +6,6 @@ import com.example.databaseCore.Pojos.User.Res.UserRes;
 import com.example.databaseCore.Repositories.User.UserRepository;
 import com.example.databaseCore.Pojos.User.Req.PasswordChanged;
 import com.example.databaseCore.Pojos.User.Req.UserRegister;
-import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
-@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -58,7 +55,6 @@ public class UserService {
             UserRes userRes = new UserRes(_user.getFirstname(), _user.getLastname(), _user.getCreatedAt(), _user.getLastLogin());
             return ResponseEntity.ok(userRes);
         } else {
-            log.error("Nie znaleziono użytkownika o ID: {}", userId);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -91,7 +87,8 @@ public class UserService {
         try {
             if (user.isPresent()) {
                 User _user = user.get();
-                if (passwordChanged.getPassword().equals(passwordChanged.getNew_password()) && passwordEncoder.matches(passwordChanged.getPassword(), _user.getPassword())) {
+                if (passwordChanged.getPassword().equals(passwordChanged.getNew_password())
+                        && passwordEncoder.matches(passwordChanged.getPassword(), _user.getPassword())) {
                     _user.setPasswordChanged(Boolean.TRUE);
                     userRepository.save(_user);
                     return new ResponseEntity<>(HttpStatus.OK);
