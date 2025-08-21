@@ -1,0 +1,99 @@
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: tsp-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: SmartRoute
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - tsp-network
+
+  atsps:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: atsps
+    depends_on:
+      - mysql-db
+    environment:
+      SPRING_DATASOURCE_URL: r2dbc:mysql://mysql-db:3306/SmartRoute
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+    ports:
+      - "8888:8888"
+    command: java -jar /opt/app/aTSPSecurity.jar
+    networks:
+      - tsp-network
+
+  map-auth-rest:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: map-auth-rest
+    depends_on:
+      - mysql-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/SmartRoute
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+    ports:
+      - "8080:8080"
+    command: java -jar /opt/app/mapAuthRest.jar
+    networks:
+      - tsp-network
+
+  map-auth-rest-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: map-auth-rest-service
+    ports:
+      - "8081:8081"
+    command: java -jar /opt/app/mapAuthRestService.jar
+    networks:
+      - tsp-network
+
+  user-auth-rest:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: user-auth-rest
+    depends_on:
+      - mysql-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/SmartRoute
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
+    ports:
+      - "8090:8090"
+    command: java -jar /opt/app/userAuthRest.jar
+    networks:
+      - tsp-network
+
+  user-auth-rest-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    container_name: user-auth-rest-service
+    ports:
+      - "8091:8091"
+    command: java -jar /opt/app/userAuthRestService.jar
+    networks:
+      - tsp-network
+
+volumes:
+  mysql-data:
+
+networks:
+  tsp-network:
