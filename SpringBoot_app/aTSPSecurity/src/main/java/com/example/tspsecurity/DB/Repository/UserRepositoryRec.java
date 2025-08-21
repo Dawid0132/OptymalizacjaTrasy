@@ -21,7 +21,7 @@ public class UserRepositoryRec {
         return databaseClient
                 .sql("select * from user u where u.email=:email")
                 .bind("email", email)
-                .map((row, _) -> new UserRec(
+                .map((row, rowMetadata) -> new UserRec(
                         row.get("id", Long.class),
                         row.get("firstname", String.class),
                         row.get("lastname", String.class),

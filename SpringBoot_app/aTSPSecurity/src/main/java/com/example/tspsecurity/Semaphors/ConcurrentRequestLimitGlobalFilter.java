@@ -24,7 +24,7 @@ public class ConcurrentRequestLimitGlobalFilter implements GlobalFilter, Ordered
         }
 
         return chain.filter(exchange)
-                .doFinally(_ -> semaphore.release());
+                .doFinally(type -> semaphore.release());
     }
 
     @Override

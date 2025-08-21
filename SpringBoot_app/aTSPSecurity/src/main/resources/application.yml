@@ -6,9 +6,9 @@ spring:
   main:
     web-application-type: reactive
   r2dbc:
-    url: r2dbc:mysql://localhost:3306/SmartRoute
-    username: root
-    password: password
+    url: ${SPRING_DATASOURCE_URL:r2dbc:mysql://localhost:3306/SmartRoute}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
     pool:
       enabled: true
       max-size: 20
