@@ -2,6 +2,7 @@ package com.example.tsp_service.TspService;
 
 import com.example.tsp_service.Pojos.Coordinates;
 import com.example.tsp_service.Pojos.SavedTrips.SavedTripReq;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
