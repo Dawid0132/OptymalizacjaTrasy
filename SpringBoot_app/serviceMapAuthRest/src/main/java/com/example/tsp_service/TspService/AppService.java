@@ -22,7 +22,7 @@ public class AppService {
     }
 
     public Object generateRoute(Long user_id) {
-        String url = "http://localhost:8080/rest/map/v2/getRoute/{user_id}";
+        String url = "http://map-auth-rest:8080/rest/map/v2/getRoute/{user_id}";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
@@ -38,7 +38,7 @@ public class AppService {
     }
 
     public Object getTrip(Long user_id, Long trip_id) {
-        String url = "http://localhost:8080/rest/map/v2/getRoute/trip/{user_id}";
+        String url = "http://map-auth-rest:8080/rest/map/v2/getRoute/trip/{user_id}";
 
         URI uri = UriComponentsBuilder
                 .fromUriString(url)
@@ -62,7 +62,7 @@ public class AppService {
     }
 
     public Object getLegs(Long userId, UUID mapName) {
-        String url = "http://localhost:8080/rest/map/v2/getRoute/legs/{user_id}";
+        String url = "http://map-auth-rest:8080/rest/map/v2/getRoute/legs/{user_id}";
 
         URI uri = UriComponentsBuilder
                 .fromUriString(url)
@@ -86,7 +86,7 @@ public class AppService {
     }
 
     public Coordinates verifyLastClickedCoordinates(Long user_id, Coordinates coordinates) {
-        String url = "http://localhost:8080/rest/map/v2/coordinatesVerify/{user_id}";
+        String url = "http://map-auth-rest:8080/rest/map/v2/coordinatesVerify/{user_id}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -102,7 +102,7 @@ public class AppService {
     }
 
     public List<Coordinates> addCoordinates(Long user_id, Coordinates coordinates) {
-        String url = "http://localhost:8080/rest/map/v2/coordinatesVerify/{user_id}";
+        String url = "http://map-auth-rest:8080/rest/map/v2/coordinatesVerify/{user_id}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -121,7 +121,7 @@ public class AppService {
     }
 
     public List<Coordinates> getListOfCoordinates(Long user_id) {
-        String url = "http://localhost:8080/rest/map/v2/coordinates/{user_id}";
+        String url = "http://map-auth-rest:8080/rest/map/v2/coordinates/{user_id}";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
@@ -139,7 +139,7 @@ public class AppService {
 
     public List<Coordinates> deleteCoordinates(Long user_id, List<Long> ids) {
 
-        String url = "http://localhost:8080/rest/map/v2/coordinates/{user_id}";
+        String url = "http://map-auth-rest:8080/rest/map/v2/coordinates/{user_id}";
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
@@ -157,7 +157,7 @@ public class AppService {
     }
 
     public Object addTrips(Long user_id, SavedTripReq savedTripReq) {
-        String url = "http://localhost:8080/rest/map/v2/trips/{user_id}";
+        String url = "http://map-auth-rest:8080/rest/map/v2/trips/{user_id}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -174,7 +174,7 @@ public class AppService {
     }
 
     public Object getAllUnfinishedTrips(Long userId) {
-        String url = "http://localhost:8080/rest/map/v2/trips/unfinished/{user_id}";
+        String url = "http://map-auth-rest:8080/rest/map/v2/trips/unfinished/{user_id}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -191,7 +191,7 @@ public class AppService {
 
     public Object deleteTrips(Long userId, Long tripId) {
 
-        String url = "http://localhost:8080/rest/map/v2/trips/delete/{user_id}";
+        String url = "http://map-auth-rest:8080/rest/map/v2/trips/delete/{user_id}";
 
         URI uri = UriComponentsBuilder
                 .fromUriString(url)
@@ -214,7 +214,7 @@ public class AppService {
     }
 
     public Boolean startDriving(Long userId, UUID mapName) {
-        String url = "http://localhost:8080/rest/map/v2/trips/startDriving/{user_id}";
+        String url = "http://map-auth-rest:8080/rest/map/v2/trips/startDriving/{user_id}";
 
         URI uri = UriComponentsBuilder
                 .fromUriString(url)
@@ -237,7 +237,7 @@ public class AppService {
     }
 
     public Boolean measuringTimeStatus(Long userId, UUID mapName) {
-        String url = "http://localhost:8080/rest/map/v2/trips/measuringTime/status/{user_id}";
+        String url = "http://map-auth-rest:8080/rest/map/v2/trips/measuringTime/status/{user_id}";
 
         URI uri = UriComponentsBuilder
                 .fromUriString(url)
@@ -261,7 +261,7 @@ public class AppService {
 
     public Object finishTrip(Long userId, Long trip_id) {
 
-        String url = "http://localhost:8080/rest/map/v2/trips/finish/{user_id}";
+        String url = "http://map-auth-rest:8080/rest/map/v2/trips/finish/{user_id}";
 
         URI uri = UriComponentsBuilder
                 .fromUriString(url)
@@ -284,7 +284,7 @@ public class AppService {
     }
 
     public Object getAllFinishedTrips(Long userId) {
-        String url = "http://localhost:8080/rest/map/v2/trips/finished/{user_id}";
+        String url = "http://map-auth-rest:8080/rest/map/v2/trips/finished/{user_id}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);

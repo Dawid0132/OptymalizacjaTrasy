@@ -3,4 +3,4 @@ spring:
     name: mapAuthRestService
   cloud:
     config:
-      uri: http://localhost:8888
+      uri: http://atsps:8888
