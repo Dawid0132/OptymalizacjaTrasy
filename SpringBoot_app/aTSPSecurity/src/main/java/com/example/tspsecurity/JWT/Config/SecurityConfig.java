@@ -43,10 +43,10 @@ public class SecurityConfig {
         return builder.routes().route("userAuthRestService", route -> route.path("/rest/user/v1/**").filters(gatewayFilterSpec -> {
             gatewayFilterSpec.addResponseHeader("res-header", "res-header-value");
             return gatewayFilterSpec;
-        }).uri("http://localhost:8091")).route("mapAuthRestService", route -> route.path("/rest/map/v1/**").filters(gatewayFilterSpec -> {
+        }).uri("http://user-auth-rest-service:8091")).route("mapAuthRestService", route -> route.path("/rest/map/v1/**").filters(gatewayFilterSpec -> {
             gatewayFilterSpec.addResponseHeader("res-header", "res-header-value");
             return gatewayFilterSpec;
-        }).uri("http://localhost:8081")).build();
+        }).uri("http://map-auth-rest-service:8081")).build();
     }
 
     @Bean
@@ -55,7 +55,7 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .exceptionHandling(exceptionHandlingSpec -> exceptionHandlingSpec.accessDeniedHandler(customAccessDeniedHandler)
                         .authenticationEntryPoint(customAuthenticationEntryPoint))
-                .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec.pathMatchers("/auth/**", "/rest/user/v2/register", "/rest/user/v1/register")
+                .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec.pathMatchers("/auth/**", "/rest/user/v2/register", "/rest/user/v1/register", "/actuator/health")
                         .permitAll().anyExchange().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, SecurityWebFiltersOrder.AUTHENTICATION);
         return httpSecurity.build();
