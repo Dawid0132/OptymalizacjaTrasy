@@ -17,7 +17,7 @@ public class UserService {
     }
 
     public String register(UserRegister userRegister) {
-        String url = "http://localhost:8090/rest/user/v2/register";
+        String url = "http://user-auth-rest:8090/rest/user/v2/register";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -30,7 +30,7 @@ public class UserService {
     }
 
     public Object getUser(Long user_id) {
-        String url = "http://localhost:8090/rest/user/v2/user/get/{user_id}";
+        String url = "http://user-auth-rest:8090/rest/user/v2/user/get/{user_id}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -44,7 +44,7 @@ public class UserService {
     }
 
     public Void logout(Long user_id) {
-        String url = "http://localhost:8090/rest/user/v2/logout/{user_id}";
+        String url = "http://user-auth-rest:8090/rest/user/v2/logout/{user_id}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -58,7 +58,7 @@ public class UserService {
     }
 
     public Void password_verify(Long userId, PasswordChanged passwordChanged) {
-        String url = "http://localhost:8090/rest/user/v2/password/verify/{user_id}";
+        String url = "http://user-auth-rest:8090/rest/user/v2/password/verify/{user_id}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -72,7 +72,7 @@ public class UserService {
     }
 
     public Void password_change(Long userId, PasswordChanged passwordChanged) {
-        String url = "http://localhost:8090/rest/user/v2/password/change/{user_id}";
+        String url = "http://user-auth-rest:8090/rest/user/v2/password/change/{user_id}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -86,7 +86,7 @@ public class UserService {
     }
 
     public Void account_delete(Long userId) {
-        String url = "http://localhost:8090/rest/user/v2/account/delete/{user_id}";
+        String url = "http://user-auth-rest:8090/rest/user/v2/account/delete/{user_id}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
