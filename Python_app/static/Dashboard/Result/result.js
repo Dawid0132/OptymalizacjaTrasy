@@ -21,7 +21,7 @@ $(`#saveForm`).on("submit", function (e) {
         contentType: 'application/json',
         success: function () {
             $.ajax({
-                url: `http://localhost:8888/rest/map/v1/${user_id}/trips`,
+                url: `/api/rest/map/v1/${user_id}/trips`,
                 type: 'POST',
                 contentType: 'application/json',
                 headers: {

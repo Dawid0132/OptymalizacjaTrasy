@@ -28,14 +28,14 @@ function displaySavedPlaces(data) {
                 const token = getCookie("access_token");
 
                 $.ajax({
-                    url: `/trip/incoming/preview/${user_id}?trip_id=${trip.id}`,
+                    url: `/trip/upcoming/preview/${user_id}?trip_id=${trip.id}`,
                     type: 'GET',
                     contentType: 'application/json',
                     headers: {
                         "Authorization": `Bearer ${token}`
                     },
                     success: function (data) {
-                        window.location.href = `/trip/incoming/preview?map_name=${data.map_name}&map_id=${data.frame_name}`
+                        window.location.href = `/trip/upcoming/preview?map_name=${data.map_name}&map_id=${data.frame_name}`
                     }, error: function (e) {
                         console.error("Error preview trip:", e);
                         alert("Nie udało Ci się podejrzeć wycieczki. Spróbuj później.");
@@ -50,7 +50,7 @@ function displaySavedPlaces(data) {
                 const token = getCookie("access_token");
 
                 $.ajax({
-                    url: `http://localhost:8888/rest/map/v1/${user_id}/trips/finish?trip_id=${trip.id}`,
+                    url: `/api/rest/map/v1/${user_id}/trips/finish?trip_id=${trip.id}`,
                     type: 'GET',
                     contentType: 'application/json',
                     headers: {
@@ -74,19 +74,16 @@ function displaySavedPlaces(data) {
                 const token = getCookie("access_token");
 
                 $.ajax({
-                    url: `http://localhost:8888/rest/map/v1/${user_id}/trips/delete?trip_id=${trip.id}`,
-                    type: 'GET',
+                    url: `/trip/upcoming/delete/${user_id}?trip_id=${trip.id}&map_name=${trip.mapName}`,
+                    type: 'DELETE',
                     contentType: 'application/json',
                     headers: {
                         "Authorization": `Bearer ${token}`
-                    },
-                    success: function (data) {
+                    }, success: function (data) {
                         displaySavedPlaces(data)
                         alert("Pomyślnie udało Ci się usunąć wybraną wycieczkę.")
-                    },
-                    error: function (error) {
-                        console.error("Error deleting cities:", error);
-                        alert("Nie udało Ci się usunąć wycieczki. Spróbuj później.");
+                    }, error: function (e) {
+                        alert(e.responseJSON.message)
                     }
                 })
             })
@@ -98,7 +95,7 @@ function loadSavedPlaces() {
     const user_id = JSON.parse(localStorage.getItem('user_id'))
     const token = getCookie("access_token");
     $.ajax({
-        url: `http://localhost:8888/rest/map/v1/${user_id}/trips/unfinished`,
+        url: `/api/rest/map/v1/${user_id}/trips/unfinished`,
         type: 'GET',
         contentType: 'application/json',
         headers: {

@@ -21,7 +21,7 @@
     </div>
     <div id="body" class="container-fluid sunset" style="display: none">
         <div class="row d-flex justify-content-between">
-            <div class="col-6">
+            <div class="col-sm-6">
                 <div id="up_part">
                     <h1 class="text-center text-decoration-underline">Trasa przejazdu</h1>
                 </div>
@@ -37,7 +37,7 @@
                     </form>
                 </div>
             </div>
-            <div class="col-6 vh-100 mb-3" id="map_container">
+            <div class="col-sm-6 vh-100 mb-3" id="map_container">
                 <iframe height="100%" id="map_frame"
                         src="{{ url_for('static',filename=path_to_map) }}" width="100%"></iframe>
             </div>

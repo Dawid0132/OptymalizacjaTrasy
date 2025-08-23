@@ -71,7 +71,7 @@
         </div>
     </div>
 </nav>
-<div class="d-flex justify-content-center align-items-center" style="height: 100vh">
+<div class="d-flex justify-content-center align-items-center">
     {% block spinner %}
     {% endblock %}
     {% block content %}
@@ -130,7 +130,6 @@
                 longitude: lon
             }),
             success: function (response) {
-                console.log(response.status)
             },
             error: function (e) {
                 console.error("Error getting location: " + e)

@@ -20,8 +20,8 @@
     </div>
 </div>
 <div class="container-fluid sunset pt-2 pb-2" id="body">
-    <div class="row d-flex justify-content-between">
-        <div class="col-6">
+    <div class="row d-flex justify-content-start align-items-start">
+        <div class="col-sm-6">
             <div id="up_part">
                 <h1 class="text-center text-decoration-underline">Dodaj współrzędne trasy</h1>
                 <form id="add_location_form" class="d-flex flex-column">
@@ -65,7 +65,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 vh-100 pt-2 pb-2" id="map_container">
+        <div class="col-sm-6 pt-2 pb-2 vh-100" id="map_container">
             <iframe id="map_frame" height="100%" src="{{ url_for('static',filename='map.html') }}"
                     width="100%"></iframe>
         </div>

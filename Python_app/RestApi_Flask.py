@@ -1,12 +1,12 @@
-from flask import Blueprint, Flask, jsonify, render_template, redirect, request, url_for, session
+from flask import Blueprint, Flask, render_template
+
+from auth_utils import token_hash_match_not_required
 
 bp = Blueprint('RestApi_Flask', __name__, template_folder='templates', url_prefix='/smartroute')
 
 
-
-
-
 @bp.route('/homePage')
+@token_hash_match_not_required
 def home_page():
     return render_template('HomePage/HomePage.html')
 

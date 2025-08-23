@@ -1,50 +1,14 @@
 import os
+import uuid
 
 import requests
-from flask import Blueprint, request, jsonify, session, redirect, render_template, url_for, current_app
+from flask import Blueprint, request, jsonify, session, redirect, render_template, url_for, make_response, current_app
 from folium import folium
-from folium import Marker, LatLngPopup, GeoJson, Element
+from folium import LatLngPopup, GeoJson, Element
 from folium.plugins import MousePosition
-from folium.template import Template
+from auth_utils import token_hash_match_required
 
 map_api = Blueprint('map_api', __name__, template_folder='templates', url_prefix='/map')
-
-
-def getPlacesForVist(user_id, token):
-    try:
-        response = requests.get(
-            f"http://localhost:8888/rest/map/v1/coordinates/{user_id}",
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {token}"})
-        return response.json(), response.status_code
-    except requests.RequestException:
-        return jsonify({"message": "Nie ma żadnych miejsc dla wygenerowania trasy"}), 404
-
-
-def getLastClickedCoordinates(user_id, token, data):
-    try:
-        response = requests.get(
-            f"http://localhost:8888/rest/map/v1/coordinatesVerify/{user_id}",
-            json=data,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {token}"})
-        return response.status_code
-    except requests.RequestException:
-        return jsonify({"message": "Współrzędne się nie zgadzają"}), 400
-
-
-def generateRoad(user_id, token):
-    try:
-        response = requests.get(f"http://localhost:8888/rest/map/v1/getRoute/{user_id}",
-                                headers={
-                                    "Content-Type": "application/json",
-                                    "Authorization": f"Bearer {token}"
-                                })
-        return response
-    except requests.RequestException:
-        return jsonify({"message": "Nie mogę wygenerować trasy"})
 
 
 def loadMap():
@@ -68,8 +32,11 @@ def loadMap():
     return jsonify({"error": "Failed to save the map"}), 500
 
 
-def loadRouteMap(geometry, distance, duration, legs):
-    m = folium.Map(location=[geometry['coordinates'][0][1], geometry['coordinates'][0][0]], zoom_start=18)
+def previewRoadGenerate(geometry, distance, duration, map_name):
+    m = folium.Map(location=[geometry['coordinates'][0][1], geometry['coordinates'][0][0]], zoom_start=11)
+
+    mouse_position = MousePosition(position='bottomright', separator=' | ', prefix="Lat, Lng: ", num_digits=6)
+    m.add_child(mouse_position)
 
     legend_html = '''
         <div style="position: fixed; 
@@ -87,66 +54,6 @@ def loadRouteMap(geometry, distance, duration, legs):
 
     m.get_root().html.add_child(Element(legend_html))
 
-    m_name = m.get_name()
-
-    markers_data = []
-
-    for idxLeg, leg in enumerate(legs):
-        for idxStep, step in enumerate(leg["steps"]):
-            for idx, intersection in enumerate(step["intersections"]):
-                if idx == 0:
-                    lat, lon = intersection["location"][1], intersection["location"][0]
-                    markers_data.append({"lat": lat, "lon": lon, "leg": idxLeg, "step": idxStep, })
-
-    template_string = """
-            <script>
-            document.addEventListener('DOMContentLoaded', function () {
-            let markers = {{ markers_data }};
-            let map = {{ m_name }};
-
-            let markersGroup = L.layerGroup().addTo(map);
-
-            function addOrRemoveMarker(lat,lon,legIdx,stepIdx){
-                let key = `${lat},${lon}`;
-
-                let markerToRemove = null
-
-                markersGroup.eachLayer(function(layer){
-                    let {lat: mLat, lng: mLon} = layer.getLatLng();
-                    if(mLat === lat && mLon === lon){
-                        markerToRemove = layer
-                    }
-                })
-
-                if(markerToRemove){
-                    markersGroup.removeLayer(markerToRemove);
-                    return;
-                }
-
-
-                markers.forEach(marker => {
-                    if(marker.lat === lat && marker.lon === lon && marker.leg === legIdx && marker.step === stepIdx){
-                        let newMarker = L.marker([marker.lat,marker.lon]);
-                        markersGroup.addLayer(newMarker)
-                    }
-                })
-            }
-
-            window.addEventListener("message", function(e){
-                if(e.data.action === "toggle_marker"){
-                    let {lat,lon,legIdx,stepIdx} = e.data;
-                    addOrRemoveMarker(lat,lon,legIdx,stepIdx)
-                }
-            },false);   
-            })
-            </script>
-            """
-
-    template = Template(template_string)
-    map_listener = template.render(m_name=m_name, markers_data=markers_data)
-
-    m.get_root().html.add_child(folium.Element(map_listener))
-
     GeoJson(
         geometry,
         style_function=lambda feature, color="#6E64FB": {
@@ -157,174 +64,41 @@ def loadRouteMap(geometry, distance, duration, legs):
         }
     ).add_to(m)
 
-    map_html_path = os.path.join('FlaskApp', 'static', 'generatedRoad.html')
+    m_name = m.get_name()
+
+    map_html_path = os.path.join(current_app.root_path, 'static', map_name)
 
     try:
         m.save(map_html_path)
         print(f"Mapa zapisana: {map_html_path}")
+        return m_name
     except Exception as e:
         print(f"Błąd podczas zapisywania mapy: {e}")
         return jsonify({"error": "Failed to save the map"}), 500
 
 
-@map_api.route('/')
-def get_location():
-    return render_template('spinner_location.html')
+def if_file_exists(filename):
+    path = os.path.join(current_app.static_folder, filename)
+    return os.path.isfile(path)
 
 
-@map_api.route('/generateMap/<int:id>', methods=['GET'])
-def generateMap(id):
-    token = request.cookies.get('access_token')
+def clear_folder(folder_path):
+    folder_path = os.path.join(current_app.static_folder, folder_path)
 
-    if not token:
-        return jsonify({"message": "Brak tokenu JWT"})
+    if not os.path.exists(folder_path):
+        return
 
-    content, status = getPlacesForVist(id, token)
-
-    places = []
-    location = True
-
-    lat = request.args.get("lat", 52.237049)
-    lon = request.args.get("lon", 21.017532)
-
-    session['latitude'] = lat
-    session['longitude'] = lon
-
-    if content:
-        places = content
-        location = False
-    else:
-        places = [{'latitude': lat, 'longitude': lon}]
-
-    loadMap(places, location)
-
-    return redirect('/map/dashboard')
-
-
-@map_api.route('/coordinates/all/<int:id>', methods=['GET'])
-def allCoordinates(id):
-    token = request.cookies.get('access_token')
-    content, status = getPlacesForVist(id, token)
-
-    print(content)
-
-    if status == 200:
-        return content
-    else:
-        return jsonify({"message": "Nie mogę pobrać wszystkich współrzędnych"}), 400
-
-
-@map_api.route('/coordinates/add/<int:id>', methods=['POST'])
-def addCoordinate(id):
-    data = request.json
-    token = request.cookies.get('access_token')
-
-    try:
-        response = requests.post(
-            f"http://localhost:8888/rest/map/v1/coordinatesVerify/{id}",
-            json=data,
-            headers={"Content-Type": "application/json",
-                     "Authorization": f"Bearer {token}"})
-
-        content, status = getPlacesForVist(id, token)
-        loadMap(content, False)
-
-        return response.content, response.status_code
-    except requests.RequestException:
-        return jsonify({"message": "Nie mogę dodać współrzędnych"}), 400
-
-
-@map_api.route('/coordinates/delete/<int:id>', methods=['DELETE'])
-def deleteCoordinate(id):
-    token = request.cookies.get('access_token')
-    data = request.json
-
-    if not data or not isinstance(data, list):
-        return jsonify({"message": "Brak danych do usunięcia"})
-
-    ids = ",".join(map(str, data))
-
-    try:
-        response = requests.get(
-            f"http://localhost:8888/rest/map/v1/deleteCoordinates/{ids}",
-            headers={"Content-Type": "application/json",
-                     "Authorization": f"Bearer {token}"})
-
-        content, status = getPlacesForVist(id, token)
-
-        if content:
-            loadMap(content, False)
-        else:
-            content = [{'latitude': session.get('latitude'), 'longitude': session.get('longitude')}]
-            loadMap(content, True)
-
-        return response.content, response.status_code
-    except requests.RequestException:
-        return jsonify({"message": "Nie mogę usunąć współrzędnych"}), 400
-
-
-@map_api.route('/findroad/<int:id>', methods=['GET'])
-def find_road(id):
-    token = request.cookies.get('access_token')
-    try:
-        response = generateRoad(id, token)
-
-        if response.status_code == 400:
-            return jsonify({"message": "Nie mogę wygenerować trasy dla tych współrzędnych"}), 400
-        elif response.status_code == 406:
-            return jsonify({"message": "Musisz wprowadzić co najmniej 2 punkty"}), 406
-        elif response.status_code == 500:
-            return jsonify({"message": "Aktualnie nie mogę wygenerować trasy spróbuj ponownie poźniej"}), 500
-
-        route = response.json()['trips'][0]
-        loadRouteMap(route['geometry'], route['distance'], route['duration'], route['legs'])
-        return redirect('/map/display_route')
-    except requests.RequestException:
-        return jsonify({"message": "Błąd komunikacji pomiędzy serwerem"}), 500
-
-
-@map_api.route('/findroad/legs/<int:id>', methods=['GET'])
-def getLegs(id):
-    token = request.cookies.get('access_token')
-
-    try:
-        response = requests.get(
-            f"http://localhost:8888/rest/map/v1/getRoute/legs/{id}",
-            headers={"Content-Type": "application/json",
-                     "Authorization": f"Bearer {token}"})
-
-        if response.status_code == 400:
-            return jsonify({"message": "Nie mogę wygenerować szczegółów trasy dla tych współrzędnych"}), 400
-        elif response.status_code == 406:
-            return jsonify({"message": "Trasa nie zawiera co najmniej 2 punktów aby wyświetlić szczegóły"}), 406
-        elif response.status_code == 500:
-            return jsonify({"message": "Aktualnie nie mogę wygenerować szczegółów trasy spróbuj ponownie poźniej"}), 500
-
-        route = response.json()
-
-        return route['trips'][0]['legs']
-    except requests.RequestException:
-        return jsonify({"message": "Nie można znaleźć trasy dla tych współrzędnych"}), 400
-
-
-@map_api.route('/verify', methods=['POST'])
-def verify():
-    data = request.json
-    user = session.get('user')
-    try:
-        response = requests.put(
-            f"http://localhost:8888/rest/map/v1/coordinatesVerify/{user['id']}",
-            json=data,
-            headers={
-                'Content-Type': 'application/json',
-                "Authorization": f"Bearer {user['token']}"}
-        )
-        return response.content, response.status_code
-    except requests.RequestException:
-        return jsonify({"message": "Nie mogę dodać współrzędnych"}), 400
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+        try:
+            if os.path.isfile(file_path):
+                os.remove(file_path)
+        except Exception as e:
+            print(f"Nie udało się usunąć {file_path}: {e}")
 
 
 @map_api.route("/selectCoordinates", methods=['GET'])
+@token_hash_match_required
 def selectCoordinates():
     lat = float(session.get("latitude", 52.237049))
     lon = float(session.get("longitude", 21.017532))
@@ -335,8 +109,61 @@ def selectCoordinates():
                            location={"latitude": lat, "longitude": lon})
 
 
-@map_api.route('/display_route', methods=['GET'])
-def display_route():
-    m_name = loadMap()
+@map_api.route("/selectCoordinates/save", methods=['DELETE'])
+@token_hash_match_required
+def saveMap():
+    map_name = request.args.get('map_name')
+    path_to_map = f"Dashboard/Result/Maps/{map_name}.html"
 
-    return render_template('/Dashboard/Result/DisplayRoute.html', map_name=m_name)
+    file_path = os.path.join(current_app.static_folder, path_to_map)
+
+    try:
+        if if_file_exists(file_path):
+            os.remove(file_path)
+            return jsonify({"message": f"Plik {map_name} został usunięty."}), 200
+        else:
+            return jsonify({"error": f"Plik {map_name} nie istnieje"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@map_api.route('/display_route', methods=['GET'])
+@token_hash_match_required
+def display_route():
+    map_name = request.args.get("map_name")
+    path = f"Dashboard/Result/Maps/{map_name}.html"
+
+    if if_file_exists(path):
+        return render_template('/Dashboard/Result/DisplayRoute.html', map_name=map_name, path_to_map=path)
+    else:
+        return redirect(url_for('map_api.selectCoordinates'))
+
+
+@map_api.route('/generateRoad/<int:id>', methods=['GET'])
+@token_hash_match_required
+def generateRoad(id):
+    token = request.cookies.get('access_token')
+    try:
+        response = requests.get(f"http://atsps:8888/rest/map/v1/{id}/getRoute",
+                                headers={
+                                    "Content-Type": "application/json",
+                                    "Authorization": f"Bearer {token}"
+                                })
+
+        if response.status_code == 200:
+            route = response.json()['trips'][0]
+            lucky_name = uuid.uuid4()
+            directory_path = "Dashboard/Result/Maps"
+            path = f"Dashboard/Result/Maps/{lucky_name}.html"
+            clear_folder(directory_path)
+            previewRoadGenerate(route['geometry'], route['distance'], route['duration'], path)
+            return jsonify({"route": route, "map_name": lucky_name}), 200
+        elif response.status_code == 404:
+            return jsonify({"message": "Aktualnie nie możemy wygenerować trasy"}), 404
+        elif response.status_code == 406:
+            return jsonify({"message": "Musisz wprowadzić co najmniej dwie współrzędne"}), 406
+        else:
+            return jsonify({"message": "Aktualnie nie możemy wygenerować trasy"}), 400
+
+    except requests.RequestException:
+        return jsonify({"message": "Błąd komunikacji pomiędzy serwerem"}), 500

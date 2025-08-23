@@ -16,7 +16,7 @@ function get_legs() {
     const token = getCookie("access_token")
 
     $.ajax({
-        url: `http://localhost:8888/rest/map/v1/${user_id}/getRoute/legs?map_name=${map_name}`,
+        url: `/api/rest/map/v1/${user_id}/getRoute/legs?map_name=${map_name}`,
         type: 'GET',
         contentType: 'application/json',
         headers: {
@@ -68,7 +68,7 @@ function generateStepHTML(index, step, idx) {
     return `
 <div id="${index}_leg_${idx}_step">
 <div class="d-flex flex-row align-items-center mt-1">
-<div class="col-sm-10">
+<div class="col-10">
 <div class="d-flex flex-row justify-content-between">
 <div>[${idx + 1}] ${step.name} </div>
 <div>${step.distance}m ${Math.round(step.duration / 60).toFixed(1)}min</div>
@@ -80,7 +80,7 @@ function generateStepHTML(index, step, idx) {
 </div>
 <div style="border-color: #f6d8ae!important;" id="tgl_container_${index}_step_${idx}" class="border-3 border-start border-opacity-25">
 <button id="tgl_btn_${index}_nested_${idx}" type="button" class="btn btn-sm" data-toggle="button" aria-pressed="false">
-<img class="" id="tgl_btn_img_${index}_nested_${idx}" src="/static/btn_status/caret-down-square.svg" alt="togglee"/>
+<img class="" id="tgl_btn_img_${index}_nested_${idx}" src="/static/Btn_status/caret-down-square.svg" alt="togglee"/>
 </button>
 </div>
 </div>
@@ -104,7 +104,7 @@ function generateLegHTML(index, item) {
     return `
         <div class="pb-3 hover-effect" id="${index}_leg">
 <div class="d-flex flex-row align-items-center">
-<div class="h5 col-sm-10">
+<div class="h5 col-10">
 <div class="d-flex flex-row">
 <div class="col-6">
 [${index + 1}] ${item.summary}
@@ -121,11 +121,9 @@ ${distance} km ${duration > 60 ? hours + "h" : ""} ${duration > 60 ? minutes : d
 </div>
 <div class="col-sm-2">
 <div class="d-flex flex-row justify-content-end">
-<div>
-</div>
 <div style="border-color: #f6d8ae!important;" id="tgl_container_${index}" class="border-3 border-start border-opacity-25">
 <button id="tgl_btn_${index}" type="button" class="btn btn-sm" data-toggle="button" aria-pressed="false">
-<img class="" id="tgl_btn_img_${index}" src="/static/btn_status/caret-down-square.svg" alt="togglee"/>
+<img class="" id="tgl_btn_img_${index}" src="/static/Btn_status/caret-down-square.svg" alt="togglee"/>
 </button>
 </div>
 </div>
@@ -145,7 +143,7 @@ function toggleElement(btnID, tglID, imgID, containerID) {
 
     toggleElement.toggle();
     containerElement.toggleClass("border-opacity-100");
-    imgElement.attr("src", toggleElement.is(":visible") ? "/static/btn_status/caret-down-square-fill.svg" : "/static/btn_status/caret-down-square.svg");
+    imgElement.attr("src", toggleElement.is(":visible") ? "/static/Btn_status/caret-down-square-fill.svg" : "/static/Btn_status/caret-down-square.svg");
 
 }
 
@@ -196,35 +194,35 @@ function add_legs(item, index) {
 
 function getManeuverInstruction(type, modifier, exit = null) {
     const type_check = {
-        "turn": {text: "Skręć", icon: "/static/road_directions/default.svg"},
-        "new name": {text: "Jedź dalej, droga zmienia nazwę", icon: "/static/road_directions/default.svg"},
-        "depart": {text: "Rozpocznij trasę", icon: "/static/road_directions/default.svg"},
-        "arrive": {text: "Dotarłeś do celu", icon: "/static/road_directions/default.svg"},
-        "merge": {text: "Włącz się do ruchu", icon: "/static/road_directions/type/merge.svg"},
-        "ramp": {text: "Zjedź na pas włączenia", icon: "/static/road_directions/type/merge.svg"},
-        "on ramp": {text: "Wjedź na autostradę", icon: "/static/road_directions/type/merge.svg"},
-        "off ramp": {text: "Zjedź z autostrady", icon: "/static/road_directions/type/merge.svg"},
-        "fork": {text: "Na rozwidleniu wybierz odpowiedni kierunek", icon: "/static/road_directions/type/fork.svg"},
-        "end of road": {text: "Na końcu drogi", icon: "/static/road_directions/default.svg"},
-        "use lane": {text: "Korzystaj z odpowiedniego pasa", icon: "/static/road_directions/default.svg"},
-        "continue": {text: "Jedź dalej, ", icon: "/static/road_directions/default.svg"},
-        "roundabout": {text: "Wjedź na rondo", icon: "/static/road_directions/type/rotary.svg"},
-        "exit roundabout": {text: "Zjedź z ronda", icon: "/static/road_directions/type/rotary.svg"},
-        "rotary": {text: "Wjedź na rondo", icon: "/static/road_directions/type/rotary.svg"},
-        "exit rotary": {text: "Zjedź z ronda", icon: "/static/road_directions/type/rotary.svg"},
-        "roundabout turn": {text: "Na rondzie ", icon: "/static/road_directions/type/rotary.svg"},
-        "notification": {text: "Uwaga: zmiana kierunków jazdy", icon: "/static/road_directions/default.svg"},
+        "turn": {text: "Skręć", icon: "/static/Road_directions/default.svg"},
+        "new name": {text: "Jedź dalej, droga zmienia nazwę", icon: "/static/Road_directions/default.svg"},
+        "depart": {text: "Rozpocznij trasę", icon: "/static/Road_directions/default.svg"},
+        "arrive": {text: "Dotarłeś do celu", icon: "/static/Road_directions/default.svg"},
+        "merge": {text: "Włącz się do ruchu", icon: "/static/Road_directions/type/merge.svg"},
+        "ramp": {text: "Zjedź na pas włączenia", icon: "/static/Road_directions/type/merge.svg"},
+        "on ramp": {text: "Wjedź na autostradę", icon: "/static/Road_directions/type/merge.svg"},
+        "off ramp": {text: "Zjedź z autostrady", icon: "/static/Road_directions/type/merge.svg"},
+        "fork": {text: "Na rozwidleniu wybierz odpowiedni kierunek", icon: "/static/Road_directions/type/fork.svg"},
+        "end of road": {text: "Na końcu drogi", icon: "/static/Road_directions/default.svg"},
+        "use lane": {text: "Korzystaj z odpowiedniego pasa", icon: "/static/Road_directions/default.svg"},
+        "continue": {text: "Jedź dalej, ", icon: "/static/Road_directions/default.svg"},
+        "roundabout": {text: "Wjedź na rondo", icon: "/static/Road_directions/type/rotary.svg"},
+        "exit roundabout": {text: "Zjedź z ronda", icon: "/static/Road_directions/type/rotary.svg"},
+        "rotary": {text: "Wjedź na rondo", icon: "/static/Road_directions/type/rotary.svg"},
+        "exit rotary": {text: "Zjedź z ronda", icon: "/static/Road_directions/type/rotary.svg"},
+        "roundabout turn": {text: "Na rondzie ", icon: "/static/Road_directions/type/rotary.svg"},
+        "notification": {text: "Uwaga: zmiana kierunków jazdy", icon: "/static/Road_directions/default.svg"},
     }
 
     const modifier_check = {
-        "uturn": {text: "Wykonaj zawracanie", icon: "/static/road_directions/modifiers/uturn.svg"},
-        "sharp right": {text: "Skręć ostro w prawo", icon: "/static/road_directions/modifiers/right.svg"},
-        "right": {text: "Skręć w prawo", icon: "/static/road_directions/modifiers/right.svg"},
-        "slight right": {text: "Skręć lekko w prawo", icon: "/static/road_directions/modifiers/slight-right.svg"},
-        "straight": {text: "Jedź prosto", icon: "/static/road_directions/modifiers/straight.svg"},
-        "slight left": {text: "Skręć lekko w lewo", icon: "/static/road_directions/modifiers/slight-left.svg"},
-        "left": {text: "Skręć w lewo", icon: "/static/road_directions/modifiers/left.svg"},
-        "sharp left": {text: "Skręc ostro w lewo", icon: "/static/road_directions/modifiers/left.svg"}
+        "uturn": {text: "Wykonaj zawracanie", icon: "/static/Road_directions/modifiers/uturn.svg"},
+        "sharp right": {text: "Skręć ostro w prawo", icon: "/static/Road_directions/modifiers/right.svg"},
+        "right": {text: "Skręć w prawo", icon: "/static/Road_directions/modifiers/right.svg"},
+        "slight right": {text: "Skręć lekko w prawo", icon: "/static/Road_directions/modifiers/slight-right.svg"},
+        "straight": {text: "Jedź prosto", icon: "/static/Road_directions/modifiers/straight.svg"},
+        "slight left": {text: "Skręć lekko w lewo", icon: "/static/Road_directions/modifiers/slight-left.svg"},
+        "left": {text: "Skręć w lewo", icon: "/static/Road_directions/modifiers/left.svg"},
+        "sharp left": {text: "Skręc ostro w lewo", icon: "/static/Road_directions/modifiers/left.svg"}
     }
 
     if (!type_check[`${type}`]) {
@@ -236,9 +234,9 @@ function getManeuverInstruction(type, modifier, exit = null) {
 
     return {
         type_instruction: type_check[`${type}`] || {
-            text: "Nieznany manewr", icon: "/static/road_directions/default.svg"
+            text: "Nieznany manewr", icon: "/static/Road_directions/default.svg"
         }, modifier_instruction: modifier_check[`${modifier}`] || {
-            text: "Nieznany manewr", icon: "/static/road_directions/default.svg"
+            text: "Nieznany manewr", icon: "/static/Road_directions/default.svg"
         }, exit: exit
     }
 }
@@ -290,7 +288,7 @@ function measuringTime(e) {
     const token = getCookie("access_token")
 
     $.ajax({
-        url: `http://localhost:8888/rest/map/v1/${user_id}/trips/startDriving?map_name=${map_name}`,
+        url: `/api/rest/map/v1/${user_id}/trips/startDriving?map_name=${map_name}`,
         type: 'GET',
         contentType: 'application/json',
         headers: {
@@ -322,7 +320,7 @@ function getStatusIsDriving() {
     const token = getCookie("access_token")
 
     $.ajax({
-        url: `http://localhost:8888/rest/map/v1/${user_id}/trips/measuringTime/status?map_name=${map_name}`,
+        url: `/api/rest/map/v1/${user_id}/trips/measuringTime/status?map_name=${map_name}`,
         type: 'GET',
         contentType: 'application/json',
         headers: {

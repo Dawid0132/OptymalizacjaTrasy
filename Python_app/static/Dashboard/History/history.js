@@ -44,7 +44,7 @@ function loadFinishedTrips() {
     const token = getCookie("access_token")
 
     $.ajax({
-        url: `http://localhost:8888/rest/map/v1/${user_id}/trips/finished`,
+        url: `/api/rest/map/v1/${user_id}/trips/finished`,
         type: 'GET',
         contentType: 'application/json',
         headers: {

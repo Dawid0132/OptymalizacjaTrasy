@@ -61,7 +61,7 @@ $(document).ready(function () {
 
                 localStorage.setItem("user_id", response.id)
                 setCookie(response.token)
-                window.location.href = "http://127.0.0.1:5000/dashboard/"
+                window.location.href = "/dashboard/"
             },
             error: function (xhr, status, error) {
                 clearFields(true, true);

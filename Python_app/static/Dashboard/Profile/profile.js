@@ -19,7 +19,7 @@ $(document).on('submit', '#delete', function (e) {
 
     if (confirm("Czy napewno chcesz usunąć konto?")) {
         $.ajax({
-            url: `http://localhost:8888/rest/user/v1/${user_id}/account/delete`,
+            url: `/api/rest/user/v1/${user_id}/account/delete`,
             type: 'GET',
             contentType: 'application/json',
             headers: {
@@ -27,7 +27,7 @@ $(document).on('submit', '#delete', function (e) {
             },
             success: function () {
                 alert("Pomyślnie udało Ci się usunąć konto")
-                window.location.href = '../../HomePage'
+                window.location.href = '/smartroute/homePage'
             },
             error: function (error) {
                 console.error("Nie udało się usunąć konta", error);
@@ -47,7 +47,7 @@ $(document).on('submit', '#change_password', function (e) {
     const new_password = $('#new_password').val();
 
     $.ajax({
-        url: `http://localhost:8888/rest/user/v1/${user_id}/password/change`,
+        url: `/api/rest/user/v1/${user_id}/password/change`,
         type: 'POST',
         contentType: 'application/json',
         headers: {
@@ -77,7 +77,7 @@ $(document).on('submit', '#verify_password', function (e) {
     const new_password = $('#new_password_verify').val();
 
     $.ajax({
-        url: `http://localhost:8888/rest/user/v1/${user_id}/password/verify`,
+        url: `/api/rest/user/v1/${user_id}/password/verify`,
         type: 'POST',
         contentType: 'application/json',
         headers: {
@@ -151,7 +151,7 @@ function fetchUserData() {
     const token = getCookie("access_token")
 
     $.ajax({
-        url: `http://localhost:8888/rest/user/v1/${user_id}/user/get`,
+        url: `/api/rest/user/v1/${user_id}/user/get`,
         type: 'GET',
         contentType: 'application/json',
         headers: {
@@ -162,7 +162,6 @@ function fetchUserData() {
         }, error: function (e) {
             console.error("User not found:", e);
             alert("Nie udało się pobrać danych użytkownika. Spróbuj ponownie później.")
-            // alert("Failed to load user. Please try again.");
         }
     })
 }

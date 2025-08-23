@@ -27,7 +27,7 @@ function get_places_for_visit(event) {
     }
 
     $.ajax({
-        url: `http://localhost:8888/rest/map/v1/${user_id}/coordinatesVerify`,
+        url: `/api/rest/map/v1/${user_id}/coordinatesVerify`,
         type: 'POST',
         contentType: 'application/json',
         data: JSON.stringify({
@@ -56,8 +56,8 @@ function displayPlacesForVisit(data) {
         const row = $(`<tr></tr>`)
         row.append(`<td>${i + 1}</td>`)
         row.append(`<td><input id="${data[i].id}" class="form-check-input" type="checkbox"></td>`)
-        row.append(`<td>${data[i].latitude}</td>`)
-        row.append(`<td>${data[i].longitude}</td>`)
+        row.append(`<td>${Number(data[i].latitude).toFixed(4)}</td>`)
+        row.append(`<td>${Number(data[i].longitude).toFixed(4)}</td>`)
         resultsTable.append(row)
     }
 }
@@ -83,10 +83,12 @@ function displayExistingPlacesOnMap(places) {
     const contentWindow = iframe[0].contentWindow
     const map = contentWindow[mapName]
     const L = contentWindow.L
+
     if (!map) {
         console.error('Mapa Leaflet nie jest dostępna!');
         return;
     }
+
     if (markerLayer) {
         markerLayer.clearLayers();
     } else {
@@ -128,7 +130,7 @@ function deletePlaces() {
     }
 
     $.ajax({
-        url: `http://localhost:8888/rest/map/v1/${user_id}/deleteCoordinates?ids=${selectedPlaces.join(',')}`,
+        url: `/api/rest/map/v1/${user_id}/deleteCoordinates?ids=${selectedPlaces.join(',')}`,
         type: 'GET',
         contentType: 'application/json',
         headers: {
@@ -177,7 +179,7 @@ function loadExistingPlaces() {
     const token = getCookie('access_token')
 
     $.ajax({
-        url: `http://localhost:8888/rest/map/v1/${user_id}/coordinates`, method: 'GET', headers: {
+        url: `/api/rest/map/v1/${user_id}/coordinates`, method: 'GET', headers: {
             'Authorization': `Bearer ${token}`
         }, success: function (data) {
             displayPlacesForVisit(data)
@@ -219,6 +221,7 @@ function add_click_event_for_send_coordinates() {
     const map = contentWindow[mapName]
 
     if (!map) {
+        console.log(mapName)
         console.error('Mapa Leaflet nie jest dostępna!');
         return;
     }
@@ -235,7 +238,7 @@ function add_click_event_for_send_coordinates() {
         }
 
         $.ajax({
-            url: `http://localhost:8888/rest/map/v1/${user_id}/coordinatesVerify`,
+            url: `/api/rest/map/v1/${user_id}/coordinatesVerify`,
             method: 'PUT',
             data: JSON.stringify(data),
             contentType: 'application/json',
@@ -257,5 +260,5 @@ $(document).ready(function () {
     $(`#remove_coordinates_btn`).on('click', deletePlaces);
     $(`#generate_road_btn`).on('click', findRoad);
     loadExistingPlaces()
-    add_click_event_for_send_coordinates()
+    $(`#map_frame`).on('load', add_click_event_for_send_coordinates);
 })
