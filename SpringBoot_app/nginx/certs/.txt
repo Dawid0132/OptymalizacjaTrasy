@@ -1,0 +1,1 @@
+Potrzebny plik smartroute.local.crt oraz smartroute.local.key dla certyfikatów ssl potrzebnych dla konfiguracji nginx
