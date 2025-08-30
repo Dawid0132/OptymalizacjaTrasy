@@ -92,7 +92,7 @@ $(document).ready(function () {
         const new_user = new User_register(firstname, lastname, email, password, confirm_password)
 
         $.ajax({
-            url: '//api/rest/user/v1/register',
+            url: '/api/rest/user/v1/register',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(new_user),
