@@ -33,7 +33,7 @@ $(`#saveForm`).on("submit", function (e) {
                 success: function () {
                     localStorage.removeItem('trip');
                     alert('Pomyślnie udało Ci się zapisać trasę')
-                    window.location.href = '/dashboard'
+                    window.location.href = '/dashboard/'
                 },
                 error: function (xhr, status, error) {
                     console.error("Nie udało się zapisać trasy", error);
