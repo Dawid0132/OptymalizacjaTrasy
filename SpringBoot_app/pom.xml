@@ -20,9 +20,9 @@
         <module>databaseCore</module>
         <module>aTSPSecurity</module>
         <module>mapAuthRest</module>
-        <module>mapAuthRestService</module>
+        <module>serviceMapAuthRest</module>
         <module>userAuthRest</module>
-        <module>userAuthRestService</module>
+        <module>serviceUserAuthRest</module>
     </modules>
 
     <properties>

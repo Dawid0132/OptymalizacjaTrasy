@@ -9,12 +9,12 @@ COPY pom.xml .
 COPY aTSPSecurity/pom.xml aTSPSecurity/pom.xml
 COPY databaseCore/pom.xml databaseCore/pom.xml
 COPY mapAuthRest/pom.xml mapAuthRest/pom.xml
-COPY mapAuthRestService/pom.xml mapAuthRestService/pom.xml
+COPY serviceMapAuthRest/pom.xml serviceMapAuthRest/pom.xml
 COPY userAuthRest/pom.xml userAuthRest/pom.xml
-COPY userAuthRestService/pom.xml userAuthRestService/pom.xml
+COPY serviceUserAuthRest/pom.xml serviceUserAuthRest/pom.xml
 
 # Tworzymy minimalne puste foldery src, żeby Maven nie narzekał
-RUN mkdir -p aTSPSecurity/src databaseCore/src mapAuthRest/src mapAuthRestService/src userAuthRest/src userAuthRestService/src
+RUN mkdir -p aTSPSecurity/src databaseCore/src mapAuthRest/src serviceMapAuthRest/src userAuthRest/src serviceUserAuthRest/src
 
 # Pobieramy zależności offline
 RUN mvn dependency:go-offline -B
@@ -34,9 +34,9 @@ COPY --from=dependencies /opt/app /opt/app
 COPY aTSPSecurity/src /opt/app/aTSPSecurity/src
 COPY databaseCore/src /opt/app/databaseCore/src
 COPY mapAuthRest/src /opt/app/mapAuthRest/src
-COPY mapAuthRestService/src /opt/app/mapAuthRestService/src
+COPY serviceMapAuthRest/src /opt/app/serviceMapAuthRest/src
 COPY userAuthRest/src /opt/app/userAuthRest/src
-COPY userAuthRestService/src /opt/app/userAuthRestService/src
+COPY serviceUserAuthRest/src /opt/app/serviceUserAuthRest/src
 
 # Budujemy wszystkie moduły
 RUN mvn clean install -DskipTests -B
@@ -50,6 +50,6 @@ WORKDIR /opt/app
 # Kopiujemy wszystkie gotowe JAR-y
 COPY --from=builder /opt/app/aTSPSecurity/target/aTSPSecurity-0.0.1-SNAPSHOT.jar /opt/app/aTSPSecurity.jar
 COPY --from=builder /opt/app/mapAuthRest/target/mapAuthRest-0.0.1-SNAPSHOT.jar /opt/app/mapAuthRest.jar
-COPY --from=builder /opt/app/mapAuthRestService/target/mapAuthRestService-0.0.1-SNAPSHOT.jar /opt/app/mapAuthRestService.jar
+COPY --from=builder /opt/app/serviceMapAuthRest/target/serviceMapAuthRest-0.0.1-SNAPSHOT.jar /opt/app/serviceMapAuthRest.jar
 COPY --from=builder /opt/app/userAuthRest/target/userAuthRest-0.0.1-SNAPSHOT.jar /opt/app/userAuthRest.jar
-COPY --from=builder /opt/app/userAuthRestService/target/userAuthRestService-0.0.1-SNAPSHOT.jar /opt/app/userAuthRestService.jar
+COPY --from=builder /opt/app/serviceUserAuthRest/target/serviceUserAuthRest-0.0.1-SNAPSHOT.jar /opt/app/serviceUserAuthRest.jar
