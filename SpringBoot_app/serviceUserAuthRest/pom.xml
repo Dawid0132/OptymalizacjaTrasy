@@ -10,7 +10,7 @@
     </parent>
 
 
-    <artifactId>userAuthRestService</artifactId>
+    <artifactId>serviceUserAuthRest</artifactId>
     <packaging>jar</packaging>
 
     <properties>
