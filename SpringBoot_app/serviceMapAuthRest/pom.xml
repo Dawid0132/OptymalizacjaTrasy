@@ -10,7 +10,7 @@
     </parent>
 
 
-    <artifactId>mapAuthRestService</artifactId>
+    <artifactId>serviceMapAuthRest</artifactId>
     <packaging>jar</packaging>
 
     <properties>
